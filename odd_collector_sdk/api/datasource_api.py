@@ -17,7 +17,7 @@ class DataSourceApi:
         self, requests: RegisterDataSourceRequests, session: ClientSession
     ):
         resp = await self.__client.post(
-            f"{self.__platform_url}/ingestion/datasource",
+            f"{self.__platform_url}/ingestion/datasources",
             requests.json(),
             session,
         )
