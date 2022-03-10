@@ -4,6 +4,7 @@ from typing import Any
 
 
 class CollectorConfig(pydantic.BaseSettings):
+    provider_oddrn: str
     default_pulling_interval: int
     token: str
     plugins: Any

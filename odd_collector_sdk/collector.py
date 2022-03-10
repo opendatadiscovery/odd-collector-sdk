@@ -6,7 +6,6 @@ from datetime import datetime
 from typing import List
 from .domain.register_datasource_request import (
     RegisterDataSourceRequest,
-    RegisterDataSourceRequests,
 )
 from .api.datasource_api import DataSourceApi
 
@@ -15,6 +14,8 @@ from .api.http_client import HttpClient
 from .domain.adapters_initializer import AdaptersInitializer
 from .domain.collector_config_loader import CollectorConfigLoader
 from .domain.collector_config import CollectorConfig
+
+from odd_models.models import DataSource, DataSourceList
 
 
 class Collector:
@@ -40,20 +41,21 @@ class Collector:
         scheduler.start()
 
     async def register_data_sources(self):
-        requests: List[RegisterDataSourceRequest] = [
-            RegisterDataSourceRequest(
+        data_sources: List[DataSource] = [
+            DataSource(
                 name=plugin.name,
                 oddrn=adapter.get_data_source_oddrn(),
                 description=plugin.description,
-                namespace=plugin.namespace,
             )
             for adapter, plugin in self.adapters_with_plugins
         ]
 
-        requests_model = RegisterDataSourceRequests(__root__=requests)
+        request = DataSourceList(
+            provider_oddrn=self.config.provider_oddrn, items=data_sources
+        )
 
         async with ClientSession() as session:
-            resp = await self.__api.register_datasource(requests_model, session)
+            resp = await self.__api.register_datasource(request, session)
 
             return resp
 

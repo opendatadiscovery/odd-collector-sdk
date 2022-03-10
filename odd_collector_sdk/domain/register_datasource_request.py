@@ -1,14 +1,8 @@
-import pydantic
-from typing import Optional
 from typing import List
+from pydantic import BaseModel
+from . import DataSource
 
 
-class RegisterDataSourceRequest(pydantic.BaseModel):
-    name: str
-    oddrn: str
-    description: Optional[str] = None
-    namespace: Optional[str] = None
-
-
-class RegisterDataSourceRequests(pydantic.BaseModel):
-    __root__: List[RegisterDataSourceRequest]
+class RegisterDataSourceRequest(BaseModel):
+    provider_oddrn: str
+    items: List[DataSource]
