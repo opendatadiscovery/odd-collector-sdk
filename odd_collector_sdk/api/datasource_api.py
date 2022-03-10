@@ -1,11 +1,8 @@
 from aiohttp import ClientSession
 from odd_models.models import DataEntityList
 
-from odd_collector_sdk.domain.register_datasource_request import (
-    RegisterDataSourceRequests,
-)
-
 from .http_client import HttpClient
+from odd_models.models import DataSourceList
 
 
 class DataSourceApi:
@@ -14,7 +11,7 @@ class DataSourceApi:
         self.__platform_url = platform_url
 
     async def register_datasource(
-        self, requests: RegisterDataSourceRequests, session: ClientSession
+        self, requests: DataSourceList, session: ClientSession
     ):
         resp = await self.__client.post(
             f"{self.__platform_url}/ingestion/datasources",

@@ -4,9 +4,6 @@ from aiohttp import ClientSession
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from datetime import datetime
 from typing import List
-from .domain.register_datasource_request import (
-    RegisterDataSourceRequest,
-)
 from .api.datasource_api import DataSourceApi
 
 from .api.http_client import HttpClient
