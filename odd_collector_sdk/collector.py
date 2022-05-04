@@ -21,6 +21,7 @@ class Collector:
         self.config: CollectorConfig = loader.load()
 
         adapter_initizlizator = AdaptersInitializer(root_package, self.config.plugins)
+
         self.adapters_with_plugins = adapter_initizlizator.init_adapters()
         self.__api = DataSourceApi(
             http_client=HttpClient(token=self.config.token),
