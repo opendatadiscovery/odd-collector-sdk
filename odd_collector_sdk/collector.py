@@ -48,9 +48,7 @@ class Collector:
             for adapter, plugin in self.adapters_with_plugins
         ]
 
-        request = DataSourceList(
-            provider_oddrn=self.config.provider_oddrn, items=data_sources
-        )
+        request = DataSourceList(items=data_sources)
 
         async with ClientSession() as session:
             resp = await self.__api.register_datasource(request, session)

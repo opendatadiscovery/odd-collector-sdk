@@ -7,7 +7,6 @@ Root project for ODD collectors
     _Main config file for collector_
     ``` python
     class CollectorConfig(pydantic.BaseSettings):
-        provider_oddrn: str
         default_pulling_interval: int # pulling interval in minutes
         token: str                    # token for requests to odd-platform
         plugins: Any
@@ -144,7 +143,6 @@ Each plugin must implement `Plugin` class from sdk
 ### collector_config.yaml
 
 ```yaml
-provider_oddrn: some_name
 default_pulling_interval: 10 
 token: "" 
 platform_host_url: "http://localhost:8080" 

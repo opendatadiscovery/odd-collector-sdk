@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odd-collector-sdk"
-version = "0.1.6"
+version = "0.2.0"
 description = "ODD Collector"
 license = "Apache-2.0"
 readme = "README.md"
@@ -8,7 +8,7 @@ homepage = "https://github.com/opendatadiscovery/odd-collector-sdk"
 repository = "https://github.com/opendatadiscovery/odd-collector-sdk"
 keywords = ["odd-collector-sdk", "odd_collector_sdk", "opendatadiscovery"]
 include = ["LICENSE"]
-authors = ["Open Data Discovery <pypi@opendatadiscovery.org>", "Pavel Makarichev <pmakarishev@provectus.com>"]
+authors = ["Open Data Discovery <pypi@opendatadiscovery.org>", "Pavel Makarichev <pmakarichev@provectus.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
