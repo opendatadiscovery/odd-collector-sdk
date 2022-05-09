@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/odd-collector-sdk.svg)](https://badge.fury.io/py/odd-collector-sdk)
+
 # ODD Collector SDK
 Root project for ODD collectors
 
