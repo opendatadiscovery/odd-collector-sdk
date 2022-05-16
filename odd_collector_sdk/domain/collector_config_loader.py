@@ -11,7 +11,6 @@ class CollectorConfigLoader:
     def __init__(self, config_path: str, plugins_union_type) -> None:
         self.union = plugins_union_type
         self.path = config_path
-        pass
 
     def load(self) -> CollectorConfig:
         try:

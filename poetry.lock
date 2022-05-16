@@ -361,7 +361,7 @@ python-versions = "*"
 
 [[package]]
 name = "odd-models"
-version = "1.0.21"
+version = "1.0.22"
 description = "Open Data Discovery Models"
 category = "main"
 optional = false
@@ -454,7 +454,7 @@ email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pyparsing"
-version = "3.0.8"
+version = "3.0.9"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
 category = "main"
 optional = false
@@ -1092,8 +1092,8 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 odd-models = [
-    {file = "odd-models-1.0.21.tar.gz", hash = "sha256:53f4346a418234e6701f937338413f9709176de756f2c7c805cbd387722af6d3"},
-    {file = "odd_models-1.0.21-py3-none-any.whl", hash = "sha256:ac0bdd434266cfe03819574e443879462a5787048ed99f6b98faa2e88c933566"},
+    {file = "odd-models-1.0.22.tar.gz", hash = "sha256:bdd6ad0fe1f8147abc5ff7275e7eab68cb710d640cbee4fd4b2c00905d7128da"},
+    {file = "odd_models-1.0.22-py3-none-any.whl", hash = "sha256:d870ec5f7a44498bbaa4479c0f5660a8b6455a44f898c3ce3f508a78ec6e65a8"},
 ]
 packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
@@ -1144,8 +1144,8 @@ pydantic = [
     {file = "pydantic-1.8.2.tar.gz", hash = "sha256:26464e57ccaafe72b7ad156fdaa4e9b9ef051f69e175dbbb463283000c05ab7b"},
 ]
 pyparsing = [
-    {file = "pyparsing-3.0.8-py3-none-any.whl", hash = "sha256:ef7b523f6356f763771559412c0d7134753f037822dad1b16945b7b846f7ad06"},
-    {file = "pyparsing-3.0.8.tar.gz", hash = "sha256:7bf433498c016c4314268d95df76c81b842a4cb2b276fa3312cfb1e1d85f6954"},
+    {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
+    {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
 ]
 pyrsistent = [
     {file = "pyrsistent-0.18.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:df46c854f490f81210870e509818b729db4488e1f30f2a1ce1698b2295a878d1"},
