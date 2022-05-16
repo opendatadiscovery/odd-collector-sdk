@@ -26,10 +26,8 @@ class DataSourceApi:
     async def ingest_data(
         self, data_entity_list: DataEntityList, session: ClientSession
     ):
-        resp = await self.__client.post(
+        return await self.__client.post(
             f"{self.__platform_url}/ingestion/entities",
             data_entity_list.json(),
             session,
         )
-
-        return resp

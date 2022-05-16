@@ -1,9 +1,13 @@
+import asyncio
+from functools import partial
 import tzlocal
 
 from aiohttp import ClientSession
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from datetime import datetime
 from typing import List
+
+from odd_collector_sdk.domain.adapter import AbstractAdapter
 from .api.datasource_api import DataSourceApi
 
 from .api.http_client import HttpClient
@@ -20,9 +24,9 @@ class Collector:
         loader = CollectorConfigLoader(config_path, plugins_union_type)
         self.config: CollectorConfig = loader.load()
 
-        adapter_initizlizator = AdaptersInitializer(root_package, self.config.plugins)
+        adapter_initializer = AdaptersInitializer(root_package, self.config.plugins)
 
-        self.adapters_with_plugins = adapter_initizlizator.init_adapters()
+        self.adapters_with_plugins = adapter_initializer.init_adapters()
         self.__api = DataSourceApi(
             http_client=HttpClient(token=self.config.token),
             platform_url=self.config.platform_host_url,
@@ -41,8 +45,8 @@ class Collector:
     async def register_data_sources(self):
         data_sources: List[DataSource] = [
             DataSource(
-                name=plugin.name,
                 oddrn=adapter.get_data_source_oddrn(),
+                name=plugin.name,
                 description=plugin.description,
             )
             for adapter, plugin in self.adapters_with_plugins
@@ -51,11 +55,18 @@ class Collector:
         request = DataSourceList(items=data_sources)
 
         async with ClientSession() as session:
-            resp = await self.__api.register_datasource(request, session)
-
-            return resp
+            return await self.__api.register_datasource(request, session)
 
     async def __ingest_data(self):
         async with ClientSession() as session:
-            for adapter, _ in self.adapters_with_plugins:
-                await self.__api.ingest_data(adapter.get_data_entity_list(), session)
+            send_request = partial(self.__send_request(session))
+            tasks = [
+                asyncio.create_task(send_request(adapter=adapter))
+                for adapter, _ in self.adapters_with_plugins
+            ]
+
+            await asyncio.gather(*tasks)
+
+    async def __send_request(self, adapter: AbstractAdapter, session: ClientSession):
+        data_entity_lists = await adapter.get_data_entity_list()
+        return await self.__api.ingest_data(data_entity_lists, session)

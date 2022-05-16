@@ -11,8 +11,7 @@ from .plugin import Plugin
 
 def file_path_to_module_path(original_file_path: str) -> str:
     without_file_extension = original_file_path.replace(".py", "")
-    module_path = without_file_extension.replace("/", ".")
-    return module_path
+    return without_file_extension.replace("/", ".")
 
 
 class AdaptersInitializer:
@@ -31,9 +30,7 @@ class AdaptersInitializer:
             if file.endswith(".py") and not file.endswith("__init__.py")
         ]
 
-        imported = [import_module(module_path) for module_path in package_modules]
-
-        return imported
+        return [import_module(module_path) for module_path in package_modules]
 
     def _load_packages(self):
         package_with_plugin_config: List[Tuple[ModuleType, Plugin]] = []
