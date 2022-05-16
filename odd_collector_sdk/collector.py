@@ -59,7 +59,7 @@ class Collector:
 
     async def __ingest_data(self):
         async with ClientSession() as session:
-            send_request = partial(self.__send_request(session))
+            send_request = partial(self.__send_request, session=session)
             tasks = [
                 asyncio.create_task(send_request(adapter=adapter))
                 for adapter, _ in self.adapters_with_plugins
@@ -67,6 +67,11 @@ class Collector:
 
             await asyncio.gather(*tasks)
 
+    async def __get_data_entity_list(self, adapter: AbstractAdapter):
+        result = adapter.get_data_entity_list()
+
+        return await result if asyncio.iscoroutine(result) else result
+
     async def __send_request(self, adapter: AbstractAdapter, session: ClientSession):
-        data_entity_lists = await adapter.get_data_entity_list()
-        return await self.__api.ingest_data(data_entity_lists, session)
+        data_entity_list = await self.__get_data_entity_list(adapter)
+        return await self.__api.ingest_data(data_entity_list, session)
