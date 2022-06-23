@@ -194,6 +194,7 @@ zipp = ">=0.5"
 docs = ["sphinx", "rst.linker"]
 testing = ["packaging", "pep517", "unittest2", "importlib-resources (>=1.3)"]
 
+
 [[package]]
 name = "more-itertools"
 version = "8.13.0"
