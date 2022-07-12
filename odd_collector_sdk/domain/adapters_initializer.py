@@ -1,10 +1,10 @@
 import os
-import logging
 
 from types import ModuleType
 from typing import List
 from typing import Tuple
 from importlib import import_module
+from odd_collector_sdk.logger import logger
 
 from .plugin import Plugin
 
@@ -45,7 +45,7 @@ class AdaptersInitializer:
 
                 plugins_loaded_package[package_path] = imported_package
             else:
-                logging.warning(f"package {package_path} has been already imported")
+                logger.warning(f"package {package_path} has been already imported")
 
             package = plugins_loaded_package[package_path]
             package_with_plugin_config.append((package, plugin))

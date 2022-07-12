@@ -1,9 +1,7 @@
-from typing import Union
 from typing_extensions import Literal
-from typing_extensions import Annotated
 
-import pydantic
 from odd_collector_sdk.domain.plugin import Plugin
+from odd_collector_sdk.types import PluginFactory
 
 
 class TestGluePlugin(Plugin):
@@ -14,7 +12,4 @@ class TestS3Plugin(Plugin):
     type: Literal["s3"]
 
 
-AvailableTestPlugins = Annotated[
-    Union[TestGluePlugin, TestS3Plugin],
-    pydantic.Field(discriminator="type"),
-]
+PLUGIN_FACTORY: PluginFactory = {"glue": TestGluePlugin, "s3": TestS3Plugin}
