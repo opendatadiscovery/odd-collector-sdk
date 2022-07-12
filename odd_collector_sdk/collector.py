@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import List
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_collector_sdk.types import PluginFactory
 from .api.datasource_api import DataSourceApi
 
 from .api.http_client import HttpClient
@@ -20,8 +21,10 @@ from odd_models.models import DataSource, DataSourceList
 
 
 class Collector:
-    def __init__(self, config_path: str, root_package: str, plugins_union_type) -> None:
-        loader = CollectorConfigLoader(config_path, plugins_union_type)
+    def __init__(
+        self, config_path: str, root_package: str, plugin_factory: PluginFactory
+    ) -> None:
+        loader = CollectorConfigLoader(config_path, plugin_factory)
         self.config: CollectorConfig = loader.load()
 
         adapter_initializer = AdaptersInitializer(root_package, self.config.plugins)

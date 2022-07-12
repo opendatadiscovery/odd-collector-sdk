@@ -1,25 +1,23 @@
-import logging
-import pydantic
-
-from typing import List
-
-from .collector_config import CollectorConfig
+from typing import Dict, Type
 from pyaml_env import parse_config
+
+from .plugin import Plugin
+from .collector_config import CollectorConfig
 
 
 class CollectorConfigLoader:
-    def __init__(self, config_path: str, plugins_union_type) -> None:
-        self.union = plugins_union_type
+    def __init__(
+        self, config_path: str, plugin_factory: Dict[str, Type[Plugin]]
+    ) -> None:
+        self.plugin_factory = plugin_factory
         self.path = config_path
 
     def load(self) -> CollectorConfig:
-        try:
-            parsed = parse_config(self.path)
-            model = pydantic.create_model(
-                "DynamicModel",
-                __base__=CollectorConfig,
-                plugins=(List[self.union], ...),
-            )
-            return model.parse_obj(parsed)
-        except Exception as e:
-            logging.error(e)
+        parsed = parse_config(self.path)
+
+        parsed["plugins"] = [
+            self.plugin_factory[plugin["type"]].parse_obj(plugin)
+            for plugin in parsed["plugins"]
+        ]
+
+        return CollectorConfig.parse_obj(parsed)

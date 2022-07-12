@@ -3,14 +3,14 @@ import sys
 
 from odd_collector_sdk.domain.collector_config_loader import CollectorConfigLoader
 from odd_collector_sdk.domain.adapters_initializer import AdaptersInitializer
-from tests.plugins import plugins
+from tests.plugins.plugins import PLUGIN_FACTORY
 
 test_folder_path = path.realpath(path.dirname(__file__))
 
 
 def test_importing_modules():
     config_path = path.join(test_folder_path, "collector_config.yaml")
-    loader = CollectorConfigLoader(config_path, plugins.AvailableTestPlugins)
+    loader = CollectorConfigLoader(config_path, PLUGIN_FACTORY)
     config = loader.load()
 
     initializer = AdaptersInitializer("tests.adapters", config.plugins)
