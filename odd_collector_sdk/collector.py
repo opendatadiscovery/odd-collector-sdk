@@ -1,23 +1,21 @@
 import asyncio
+from datetime import datetime
 from functools import partial
-import tzlocal
+from typing import List
 
+import tzlocal
 from aiohttp import ClientSession
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from datetime import datetime
-from typing import List
+from odd_models.models import DataSource, DataSourceList
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_collector_sdk.types import PluginFactory
+
 from .api.datasource_api import DataSourceApi
-
 from .api.http_client import HttpClient
-
 from .domain.adapters_initializer import AdaptersInitializer
-from .domain.collector_config_loader import CollectorConfigLoader
 from .domain.collector_config import CollectorConfig
-
-from odd_models.models import DataSource, DataSourceList
+from .domain.collector_config_loader import CollectorConfigLoader
 
 
 class Collector:
