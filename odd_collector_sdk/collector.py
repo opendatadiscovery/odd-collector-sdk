@@ -1,4 +1,5 @@
 import asyncio
+
 from asyncio import Task
 from datetime import datetime
 from functools import partial
@@ -11,12 +12,14 @@ from odd_models.models import DataSource, DataSourceList
 
 from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_collector_sdk.types import PluginFactory
+
 from .api.datasource_api import DataSourceApi
 from .api.http_client import HttpClient
 from .domain.adapters_initializer import AdaptersInitializer
 from .domain.collector_config import CollectorConfig
 from .domain.collector_config_loader import CollectorConfigLoader
 from .logger import logger
+
 
 
 class Collector:
