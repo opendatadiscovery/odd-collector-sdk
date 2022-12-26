@@ -1,5 +1,6 @@
-from odd_collector_sdk.domain.adapter import AbstractAdapter
 from odd_models.models import DataEntityList
+
+from odd_collector_sdk.domain.adapter import AbstractAdapter
 
 
 class Adapter(AbstractAdapter):

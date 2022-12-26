@@ -1,11 +1,11 @@
 import os
-
-from types import ModuleType
-from typing import List
-from typing import Tuple
 from importlib import import_module
+from types import ModuleType
+from typing import List, Tuple
+
 from odd_collector_sdk.logger import logger
 
+from .adapter import Adapter
 from .plugin import Plugin
 
 
@@ -56,6 +56,6 @@ class AdaptersInitializer:
         self,
     ):
         return [
-            (package.adapter.Adapter(plugin), plugin)
+            Adapter(package.adapter.Adapter(plugin), plugin)
             for package, plugin in self._load_packages()
         ]
