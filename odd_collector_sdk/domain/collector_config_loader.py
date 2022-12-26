@@ -1,8 +1,9 @@
 from typing import Dict, Type
+
 from pyaml_env import parse_config
 
-from .plugin import Plugin
 from .collector_config import CollectorConfig
+from .plugin import Plugin
 
 
 class CollectorConfigLoader:
