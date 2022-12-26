@@ -1,5 +1,5 @@
 import sys
-from datetime import datetime, timedelta
+from datetime import timedelta
 from timeit import default_timer as timer
 
 from aiohttp import ClientSession

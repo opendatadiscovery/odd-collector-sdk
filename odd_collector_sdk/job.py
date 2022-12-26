@@ -13,6 +13,7 @@ from odd_models.models import DataEntityList
 from odd_collector_sdk.api.datasource_api import PlatformApi
 from odd_collector_sdk.domain.adapter import AbstractAdapter, Adapter, AdapterConfig
 
+
 from .logger import logger
 
 
