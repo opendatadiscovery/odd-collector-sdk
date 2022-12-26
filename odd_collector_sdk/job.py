@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 from contextlib import contextmanager
 from datetime import timedelta
 from inspect import isasyncgenfunction, iscoroutinefunction
@@ -10,8 +11,8 @@ from funcy import chunks
 from odd_models.models import DataEntityList
 
 from odd_collector_sdk.api.datasource_api import PlatformApi
-from odd_collector_sdk.domain.adapter import (AbstractAdapter, Adapter,
-                                              AdapterConfig)
+from odd_collector_sdk.domain.adapter import AbstractAdapter, Adapter, AdapterConfig
+
 
 from .logger import logger
 
@@ -22,6 +23,9 @@ def log_execution(name):
         start = timer()
         logger.debug(f"[{name}] collecting metadata started")
         yield
+    except Exception as e:
+        logger.debug(traceback.print_exc())
+        logger.error(e)
     finally:
         end = timer()
         logger.debug(f"[{name}] metadata collected in {timedelta(seconds=end - start)}")
@@ -38,8 +42,7 @@ class AbstractJob:
         ...
 
     async def send_metadata(self, metadata: DataEntityList, session: ClientSession):
-        response = await self._api.ingest_data(metadata, session)
-        response.raise_for_status()
+        await self._api.ingest_data(metadata, session)
 
     def _split(
         self, data_entity_lists: Union[DataEntityList, Iterable[DataEntityList]]
