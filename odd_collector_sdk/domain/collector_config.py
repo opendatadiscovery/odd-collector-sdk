@@ -12,3 +12,9 @@ class CollectorConfig(pydantic.BaseSettings):
     plugins: List[Plugin]
     platform_host_url: str
     chunk_size: Optional[int] = 250
+    misfire_grace_time: Optional[
+        int
+    ]  # seconds after the designated runtime that the job is still allowed to be run
+    max_instances: Optional[
+        int
+    ]  # maximum number of concurrently running instances allowed

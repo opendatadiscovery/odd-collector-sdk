@@ -38,6 +38,10 @@ class Collector:
         )
 
     def start_polling(self):
+        misfire_grace_time = (
+            self.config.misfire_grace_time or self.config.default_pulling_interval * 60
+        )
+
         scheduler = AsyncIOScheduler(timezone=str(tzlocal.get_localzone()))
         for adapter in self._adapters:
             scheduler.add_job(
@@ -45,6 +49,10 @@ class Collector:
                 "interval",
                 minutes=self.config.default_pulling_interval,
                 next_run_time=datetime.now(),
+                misfire_grace_time=misfire_grace_time,
+                max_instances=self.config.max_instances,
+                coalesce=True,
+                id=adapter.config.name,
             )
         scheduler.start()
 
