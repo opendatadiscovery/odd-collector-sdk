@@ -17,4 +17,4 @@ class CollectorConfig(pydantic.BaseSettings):
     ]  # seconds after the designated runtime that the job is still allowed to be run
     max_instances: Optional[
         int
-    ]  # maximum number of concurrently running instances allowed
+    ] = 1  # maximum number of concurrently running instances allowed
