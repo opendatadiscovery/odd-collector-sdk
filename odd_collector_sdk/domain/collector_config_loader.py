@@ -1,20 +1,22 @@
-from typing import Dict, Type
+from pathlib import Path
+from typing import Dict, Type, Union
 
 from pyaml_env import parse_config
 
 from .collector_config import CollectorConfig
 from .plugin import Plugin
-
+from ..logger import logger
 
 class CollectorConfigLoader:
     def __init__(
-        self, config_path: str, plugin_factory: Dict[str, Type[Plugin]]
+        self, config_path: Union[str, Path], plugin_factory: Dict[str, Type[Plugin]]
     ) -> None:
         self.plugin_factory = plugin_factory
-        self.path = config_path
+        self.path = Path(config_path).resolve()
 
     def load(self) -> CollectorConfig:
-        parsed = parse_config(self.path)
+        logger.debug("Start reading config")
+        parsed = parse_config(str(self.path))
 
         parsed["plugins"] = [
             self.plugin_factory[plugin["type"]].parse_obj(plugin)

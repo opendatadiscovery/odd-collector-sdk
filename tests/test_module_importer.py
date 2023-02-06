@@ -22,6 +22,8 @@ def test_importing_modules():
     assert f"{package_name}.adapter" not in sys.modules
 
     imported_packages = initializer.init_adapters()
+    assert f"{package_name}.sub_pkg" in sys.modules
+    assert f"{package_name}.sub_pkg.sub_module" in sys.modules
 
     assert len(imported_packages) == 2
     assert package_name in sys.modules
