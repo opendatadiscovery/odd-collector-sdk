@@ -1,5 +1,5 @@
 import asyncio
-import traceback
+import traceback as tb
 from contextlib import contextmanager
 from datetime import timedelta
 from inspect import isasyncgenfunction, iscoroutinefunction
@@ -21,14 +21,14 @@ from .logger import logger
 def log_execution(name):
     try:
         start = timer()
-        logger.debug(f"[{name}] collecting metadata started")
+        logger.info(f"[{name}] collecting metadata started.")
         yield
     except Exception as e:
-        logger.debug(traceback.print_exc())
-        logger.error(e)
-    finally:
+        logger.debug(tb.format_exc())
+        logger.error(f"[{name}] failed.\n {e}")
+    else:
         end = timer()
-        logger.debug(f"[{name}] metadata collected in {timedelta(seconds=end - start)}")
+        logger.success(f"[{name}] metadata collected in {timedelta(seconds=end - start)}.")
 
 
 class AbstractJob:
@@ -96,7 +96,7 @@ def create_job(api: PlatformApi, adapter: Adapter, chunk_size: int) -> AbstractJ
     if isasyncgenfunction(adapter.adapter.get_data_entity_list):
         raise ValueError("Async generator is not supported.")
     if iscoroutinefunction(adapter.adapter.get_data_entity_list):
-        logger.debug("is async job")
+        logger.debug(f"Is async {adapter.config.name=}")
         return AsyncJob(api, adapter, chunk_size)
     else:
         return SyncJob(api, adapter, chunk_size)

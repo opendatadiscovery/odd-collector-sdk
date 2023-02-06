@@ -22,6 +22,7 @@ importlib-metadata = "^5.1.0"
 tqdm = "^4.64.1"
 funcy = "^1.17"
 isort = "^5.11.4"
+loguru = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

@@ -15,7 +15,10 @@ from .api.http_client import HttpClient
 from .domain.adapters_initializer import AdaptersInitializer
 from .domain.collector_config import CollectorConfig
 from .domain.collector_config_loader import CollectorConfigLoader
+import logging
 
+
+logging.getLogger("apscheduler.scheduler").setLevel(logging.ERROR)
 
 class Collector:
     _adapters: List[Adapter]
@@ -43,6 +46,7 @@ class Collector:
         )
 
         scheduler = AsyncIOScheduler(timezone=str(tzlocal.get_localzone()))
+
         for adapter in self._adapters:
             scheduler.add_job(
                 create_job(self._api, adapter, self.config.chunk_size).start,
