@@ -3,9 +3,10 @@ from typing import Dict, Type, Union
 
 from pyaml_env import parse_config
 
+from ..logger import logger
 from .collector_config import CollectorConfig
 from .plugin import Plugin
-from ..logger import logger
+
 
 class CollectorConfigLoader:
     def __init__(

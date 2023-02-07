@@ -1,9 +1,10 @@
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
-from typing import NamedTuple, Dict
+from typing import Dict, NamedTuple
 
 from odd_collector_sdk.logger import logger
+
 from .adapter import Adapter
 from .plugin import Plugin
 
@@ -36,7 +37,6 @@ class AdaptersInitializer:
         self.loaded: Dict[str, ModuleType] = {}
 
     def _load_packages(self) -> list[LoadedPackage]:
-
         result = []
         for plugin in self.plugins:
             package = self._load_package(plugin)
@@ -44,7 +44,6 @@ class AdaptersInitializer:
             result.append(loaded)
 
         return result
-
 
     def _load_package(self, plugin: Plugin) -> ModuleType:
         package_path = f"{self.root_package}.{plugin.type}"
@@ -60,7 +59,7 @@ class AdaptersInitializer:
         return self.loaded[package_path]
 
     def init_adapters(
-            self,
+        self,
     ):
         adapters = [
             Adapter(package.adapter.Adapter(plugin), plugin)

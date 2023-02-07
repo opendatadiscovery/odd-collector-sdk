@@ -2,8 +2,7 @@ import sys
 from os import path
 
 from odd_collector_sdk.domain.adapters_initializer import AdaptersInitializer
-from odd_collector_sdk.domain.collector_config_loader import \
-    CollectorConfigLoader
+from odd_collector_sdk.domain.collector_config_loader import CollectorConfigLoader
 from tests.plugins.plugins import PLUGIN_FACTORY
 
 test_folder_path = path.realpath(path.dirname(__file__))

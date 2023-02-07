@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from typing import List
 
@@ -15,10 +16,9 @@ from .api.http_client import HttpClient
 from .domain.adapters_initializer import AdaptersInitializer
 from .domain.collector_config import CollectorConfig
 from .domain.collector_config_loader import CollectorConfigLoader
-import logging
-
 
 logging.getLogger("apscheduler.scheduler").setLevel(logging.ERROR)
+
 
 class Collector:
     _adapters: List[Adapter]
