@@ -46,7 +46,6 @@ class Collector:
         )
 
         scheduler = AsyncIOScheduler(timezone=str(tzlocal.get_localzone()))
-        breakpoint()
         for adapter in self._adapters:
             scheduler.add_job(
                 create_job(self._api, adapter, self.config.chunk_size).start,
