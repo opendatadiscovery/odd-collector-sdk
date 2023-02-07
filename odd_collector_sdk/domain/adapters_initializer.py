@@ -1,7 +1,7 @@
-import os
 from importlib import import_module
+from pathlib import Path
 from types import ModuleType
-from typing import List, Tuple
+from typing import Dict, NamedTuple
 
 from odd_collector_sdk.logger import logger
 
@@ -9,53 +9,63 @@ from .adapter import Adapter
 from .plugin import Plugin
 
 
-def file_path_to_module_path(original_file_path: str) -> str:
-    without_file_extension = original_file_path.replace(".py", "")
-    return without_file_extension.replace("/", ".")
+class LoadedPackage(NamedTuple):
+    package: ModuleType
+    adapter: Plugin
+
+
+def import_submodules(package: ModuleType) -> None:
+    package_name = package.__name__
+    package_path = Path(package.__file__).parent
+
+    all_files = package_path.glob("*")
+    not_private = filter(lambda f: not f.name.startswith("__"), all_files)
+
+    for file in not_private:
+        module_name = f"{package_name}.{file.stem}"
+        module = import_module(module_name)
+
+        if file.is_dir():
+            import_submodules(module)
 
 
 class AdaptersInitializer:
-    def __init__(self, root_package: str, plugins: List[Plugin]):
+    def __init__(self, root_package: str, plugins: list[Plugin]):
         self.root_package = root_package
         self.plugins = plugins
 
-    def _import_odd_package_modules(self, package: ModuleType) -> List[ModuleType]:
-        package_name = package.__name__
-        package_path = package_name.replace(".", "/")
+        self.loaded: Dict[str, ModuleType] = {}
 
-        package_modules = [
-            file_path_to_module_path(os.path.join(root, file))
-            for root, _, files in os.walk(package_path)
-            for file in files
-            if file.endswith(".py") and not file.endswith("__init__.py")
-        ]
-
-        return [import_module(module_path) for module_path in package_modules]
-
-    def _load_packages(self):
-        package_with_plugin_config: List[Tuple[ModuleType, Plugin]] = []
-        plugins_loaded_package = {}
-        adapters_root_package = self.root_package
-
+    def _load_packages(self) -> list[LoadedPackage]:
+        result = []
         for plugin in self.plugins:
-            package_path = f"{adapters_root_package}.{plugin.type}"
-            if package_path not in plugins_loaded_package:
-                imported_package = import_module(package_path)
-                self._import_odd_package_modules(imported_package)
+            package = self._load_package(plugin)
+            loaded = LoadedPackage(package, plugin)
+            result.append(loaded)
 
-                plugins_loaded_package[package_path] = imported_package
-            else:
-                logger.warning(f"package {package_path} has been already imported")
+        return result
 
-            package = plugins_loaded_package[package_path]
-            package_with_plugin_config.append((package, plugin))
+    def _load_package(self, plugin: Plugin) -> ModuleType:
+        package_path = f"{self.root_package}.{plugin.type}"
 
-        return package_with_plugin_config
+        if package_path not in self.loaded:
+            package = import_module(package_path)
+            import_submodules(package)
+            self.loaded[package_path] = package
+
+        else:
+            logger.debug(f"Package {package_path=} has been already imported")
+
+        return self.loaded[package_path]
 
     def init_adapters(
         self,
     ):
-        return [
+        adapters = [
             Adapter(package.adapter.Adapter(plugin), plugin)
             for package, plugin in self._load_packages()
         ]
+
+        logger.success(f"Loaded {len(adapters)} adapter(s).")
+
+        return adapters

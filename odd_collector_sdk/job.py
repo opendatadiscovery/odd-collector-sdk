@@ -13,7 +13,6 @@ from odd_models.models import DataEntityList
 from odd_collector_sdk.api.datasource_api import PlatformApi
 from odd_collector_sdk.domain.adapter import AbstractAdapter, Adapter, AdapterConfig
 
-
 from .logger import logger
 
 
@@ -28,7 +27,9 @@ def log_execution(name):
         logger.error(f"[{name}] failed.\n {e}")
     else:
         end = timer()
-        logger.success(f"[{name}] metadata collected in {timedelta(seconds=end - start)}.")
+        logger.success(
+            f"[{name}] metadata collected in {timedelta(seconds=end - start)}."
+        )
 
 
 class AbstractJob:
