@@ -1,5 +1,6 @@
 default_pulling_interval: 10
 token: ""
+chunk_size: 100
 platform_host_url: "http://localhost:8080"
 plugins:
   - type: glue
