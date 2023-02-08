@@ -1,8 +1,9 @@
 import asyncio
 import logging
 import signal
-from asyncio import AbstractEventLoop
+import traceback
 
+from asyncio import AbstractEventLoop
 from datetime import datetime
 from typing import List, Optional
 
@@ -95,6 +96,6 @@ class Collector:
 
             self.start_polling()
             loop.run_forever()
-
         except Exception as e:
-            logger.exception(e)
+            logger.debug(traceback.format_exc())
+            logger.error(e)
