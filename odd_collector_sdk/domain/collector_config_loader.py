@@ -16,11 +16,13 @@ class CollectorConfigLoader:
     ) -> None:
         self.plugin_factory = plugin_factory
 
-        config_path = os.getenv("CONFIG_PATH", config_path)
+        config_path = config_path or os.getenv("CONFIG_PATH", "collector_config.yaml")
         self.path = Path(config_path).resolve()
 
     def load(self) -> CollectorConfig:
+        logger.debug(f"Config path {self.path}")
         logger.info("Start reading config")
+
         try:
             parsed = parse_config(str(self.path))
             parsed["plugins"] = [
