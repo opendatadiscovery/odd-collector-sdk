@@ -11,7 +11,7 @@ class CollectorConfig(pydantic.BaseSettings):
     token: str
     plugins: List[Plugin]
     platform_host_url: str
-    chunk_size: Optional[int] = 250
+    chunk_size: int = 250
     misfire_grace_time: Optional[
         int
     ]  # seconds after the designated runtime that the job is still allowed to be run

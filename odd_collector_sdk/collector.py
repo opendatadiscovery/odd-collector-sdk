@@ -1,6 +1,10 @@
+import asyncio
 import logging
+import signal
+from asyncio import AbstractEventLoop
+
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 import tzlocal
 from aiohttp import ClientSession
@@ -9,6 +13,8 @@ from odd_models.models import DataSource, DataSourceList
 
 from odd_collector_sdk.domain.adapter import Adapter
 from odd_collector_sdk.job import create_job
+from odd_collector_sdk.logger import logger
+from odd_collector_sdk.shutdown import shutdown
 from odd_collector_sdk.types import PluginFactory
 
 from .api.datasource_api import PlatformApi
@@ -73,3 +79,22 @@ class Collector:
 
         async with ClientSession() as session:
             return await self._api.register_datasource(request, session)
+
+    def run(self, loop: Optional[AbstractEventLoop] = None):
+        try:
+            if not loop:
+                loop = asyncio.get_event_loop()
+
+            signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
+            for s in signals:
+                loop.add_signal_handler(
+                    s, lambda s=s: asyncio.create_task(shutdown(s, loop))
+                )
+
+            loop.run_until_complete(self.register_data_sources())
+
+            self.start_polling()
+            loop.run_forever()
+
+        except Exception as e:
+            logger.exception(e)
