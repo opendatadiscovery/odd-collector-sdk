@@ -11,12 +11,12 @@ include = ["LICENSE"]
 authors = ["Open Data Discovery <pypi@opendatadiscovery.org>", "Pavel Makarichev <pmakarichev@provectus.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 APScheduler = "^3.8.1"
 pydantic = "^1.8.2"
 aiohttp = "^3.8.1"
 pyaml-env = "^1.1.5"
-odd-models = "^2.0.0"
+odd-models = "2.0.11"
 importlib-metadata = "^5.1.0"
 tqdm = "^4.64.1"
 funcy = "^1.17"

@@ -14,14 +14,18 @@ class LoadedPackage(NamedTuple):
     adapter: Plugin
 
 
+def file_match(path: Path) -> bool:
+    return path.name.endswith(".py") and not path.name.startswith("__")
+
+
 def import_submodules(package: ModuleType) -> None:
     package_name = package.__name__
     package_path = Path(package.__file__).parent
 
     all_files = package_path.glob("*")
-    not_private = filter(lambda f: not f.name.startswith("__"), all_files)
+    python_modules = filter(file_match, all_files)
 
-    for file in not_private:
+    for file in python_modules:
         module_name = f"{package_name}.{file.stem}"
         module = import_module(module_name)
 
@@ -52,7 +56,6 @@ class AdaptersInitializer:
             package = import_module(package_path)
             import_submodules(package)
             self.loaded[package_path] = package
-
         else:
             logger.debug(f"Package {package_path=} has been already imported")
 
