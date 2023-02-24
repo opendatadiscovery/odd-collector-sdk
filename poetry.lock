@@ -601,17 +601,18 @@ setuptools = "*"
 
 [[package]]
 name = "odd-models"
-version = "2.0.11"
+version = "2.0.17"
 description = "Open Data Discovery Models"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_models-2.0.11-py3-none-any.whl", hash = "sha256:b4e52a8f6645d44bb1ef3c8ef53a5f46b7a35b3683534b0ff3e7d121c80034ea"},
-    {file = "odd_models-2.0.11.tar.gz", hash = "sha256:532397bee5f26c65bba96a45b9536a35182c63617a25157dcb5171c34509f6a5"},
+    {file = "odd_models-2.0.17-py3-none-any.whl", hash = "sha256:56571b11872c35efefb73655f0d9de808d2c7639a77966ec47141eced7a7da54"},
+    {file = "odd_models-2.0.17.tar.gz", hash = "sha256:56e234dd5a7a150255dbd993d7642e95693b72a73bd9154206e014442cbdf60f"},
 ]
 
 [package.dependencies]
+loguru = ">=0.6.0,<0.7.0"
 pydantic = ">=1.9.1,<2.0.0"
 requests = "2.27.1"
 sql-metadata = ">=2.6.0,<3.0.0"
@@ -1202,4 +1203,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "79ad097054c821dd71171728b7a104a51b1f078ff0e0d25c97efbaa5f889d21a"
+content-hash = "06b123f2dc9b36853acf8d1d75d59934ad12fc7d994599f602827f7a2e1052f7"
