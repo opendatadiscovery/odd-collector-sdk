@@ -2,10 +2,10 @@ import asyncio
 import logging
 import signal
 import traceback
-
 from asyncio import AbstractEventLoop
 from datetime import datetime
-from typing import List, Optional
+from pathlib import Path
+from typing import List, Optional, Union
 
 import tzlocal
 from aiohttp import ClientSession
@@ -23,20 +23,51 @@ from .api.http_client import HttpClient
 from .domain.adapters_initializer import AdaptersInitializer
 from .domain.collector_config import CollectorConfig
 from .domain.collector_config_loader import CollectorConfigLoader
+from .utils.print_version import print_collector_packages_info, version
 
 logging.getLogger("apscheduler.scheduler").setLevel(logging.ERROR)
 
 
 class Collector:
+    """All ODD collectors should use that class to run.
+
+    Attributes:
+        config_path: Path| str
+            Path to "collector_config.yaml" file
+        root_package: str
+            Package name for derived collector
+        plugin_factory: dict
+            fabric for plugins
+        plugins_package: str:
+            subpackage where plugins are stored.
+
+    Example:
+        >>> collector = Collector(
+            config_path=Path().cwd() / "collector_config.yaml",
+            root_package="odd_collector",
+            plugin_factory=PLUGIN_FACTORY,
+        )
+        >>>collector.run()
+
+    """
+
     _adapters: List[Adapter]
 
     def __init__(
-        self, config_path: str, root_package: str, plugin_factory: PluginFactory
+        self,
+        config_path: Union[str, Path],
+        root_package: str,
+        plugin_factory: PluginFactory,
+        plugins_package: str = "adapters",
     ) -> None:
+        logger.success(f"Run {root_package}: {version(root_package)}")
+        print_collector_packages_info(root_package)
+
         loader = CollectorConfigLoader(config_path, plugin_factory)
         self.config: CollectorConfig = loader.load()
 
-        adapter_initializer = AdaptersInitializer(root_package, self.config.plugins)
+        adapters_package = f"{root_package}.{plugins_package}"
+        adapter_initializer = AdaptersInitializer(adapters_package, self.config.plugins)
 
         self._adapters = adapter_initializer.init_adapters()
         self._api = PlatformApi(
