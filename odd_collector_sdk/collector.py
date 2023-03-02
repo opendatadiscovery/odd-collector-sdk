@@ -60,7 +60,6 @@ class Collector:
         plugin_factory: PluginFactory,
         plugins_package: str = "adapters",
     ) -> None:
-        logger.success(f"Run {root_package}: {version(root_package)}")
         print_collector_packages_info(root_package)
 
         loader = CollectorConfigLoader(config_path, plugin_factory)
