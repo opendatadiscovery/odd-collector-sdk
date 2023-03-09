@@ -8,14 +8,13 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 import tzlocal
-from aiohttp import ClientSession
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from odd_models.models import DataSource, DataSourceList
 
 from odd_collector_sdk.domain.adapter import Adapter
 from odd_collector_sdk.job import create_job
 from odd_collector_sdk.logger import logger
-from odd_collector_sdk.shutdown import shutdown
+from odd_collector_sdk.shutdown import shutdown, shutdown_by
 from odd_collector_sdk.types import PluginFactory
 
 from .api.datasource_api import PlatformApi
@@ -23,7 +22,8 @@ from .api.http_client import HttpClient
 from .domain.adapters_initializer import AdaptersInitializer
 from .domain.collector_config import CollectorConfig
 from .domain.collector_config_loader import CollectorConfigLoader
-from .utils.print_version import print_collector_packages_info, version
+from .errors import PlatformApiError
+from .utils.print_version import print_collector_packages_info
 
 logging.getLogger("apscheduler.scheduler").setLevel(logging.ERROR)
 
@@ -108,24 +108,28 @@ class Collector:
 
         request = DataSourceList(items=data_sources)
 
-        async with ClientSession() as session:
-            return await self._api.register_datasource(request, session)
+        await self._api.register_datasource(request)
 
     def run(self, loop: Optional[AbstractEventLoop] = None):
+        if not loop:
+            loop = asyncio.get_event_loop()
         try:
-            if not loop:
-                loop = asyncio.get_event_loop()
-
             signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
             for s in signals:
                 loop.add_signal_handler(
-                    s, lambda s=s: asyncio.create_task(shutdown(s, loop))
+                    s, lambda s=s: asyncio.create_task(shutdown_by(s, loop))
                 )
 
             loop.run_until_complete(self.register_data_sources())
 
             self.start_polling()
             loop.run_forever()
+        except PlatformApiError as e:
+            logger.error(e)
+            if e.request:
+                logger.debug(e.request)
+            loop.run_until_complete(shutdown(loop))
         except Exception as e:
             logger.debug(traceback.format_exc())
             logger.error(e)
+            loop.run_until_complete(shutdown(loop))

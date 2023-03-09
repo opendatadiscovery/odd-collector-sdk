@@ -6,7 +6,6 @@ from inspect import isasyncgenfunction, iscoroutinefunction
 from timeit import default_timer as timer
 from typing import Any, Generator, Iterable, Union
 
-from aiohttp import ClientSession
 from funcy import chunks
 from odd_models.models import DataEntityList
 
@@ -42,8 +41,8 @@ class AbstractJob:
     async def start() -> None:
         ...
 
-    async def send_metadata(self, metadata: DataEntityList, session: ClientSession):
-        await self._api.ingest_data(metadata, session)
+    async def send_metadata(self, metadata: DataEntityList):
+        await self._api.ingest_data(metadata)
 
     def _split(
         self, data_entity_lists: Union[DataEntityList, Iterable[DataEntityList]]
@@ -66,14 +65,11 @@ class AbstractJob:
 class AsyncJob(AbstractJob):
     async def start(self):
         with log_execution(self._config.name):
-            async with ClientSession() as session:
-                tasks = []
-                async for del_ in self._get_data_entity_list():
-                    task = asyncio.create_task(
-                        self.send_metadata(metadata=del_, session=session)
-                    )
-                    tasks.append(task)
-                await asyncio.gather(*tasks)
+            tasks = []
+            async for del_ in self._get_data_entity_list():
+                task = asyncio.create_task(self.send_metadata(metadata=del_))
+                tasks.append(task)
+            await asyncio.gather(*tasks)
 
     async def _get_data_entity_list(self) -> Generator[DataEntityList, Any, Any]:
         data_entity_lists = await self._adapter.get_data_entity_list()
@@ -84,9 +80,8 @@ class AsyncJob(AbstractJob):
 class SyncJob(AbstractJob):
     async def start(self):
         with log_execution(self._config.name):
-            async with ClientSession() as session:
-                for del_ in self._get_data_entity_list():
-                    await self.send_metadata(metadata=del_, session=session)
+            for del_ in self._get_data_entity_list():
+                await self.send_metadata(metadata=del_)
 
     def _get_data_entity_list(self) -> Generator[DataEntityList, Any, Any]:
         data_entity_lists = self._adapter.get_data_entity_list()
