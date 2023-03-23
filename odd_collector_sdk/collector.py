@@ -120,6 +120,7 @@ class Collector:
 
         await asyncio.gather(*tasks)
 
+
     def run(self, loop: Optional[AbstractEventLoop] = None):
         if not loop:
             loop = asyncio.get_event_loop()
@@ -147,5 +148,5 @@ class Collector:
             loop.run_until_complete(shutdown(loop))
         except Exception as e:
             logger.debug(traceback.format_exc())
-            logger.exception(e)
+            logger.error(e)
             loop.run_until_complete(shutdown(loop))
