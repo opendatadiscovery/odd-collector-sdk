@@ -715,14 +715,14 @@ setuptools = "*"
 
 [[package]]
 name = "odd-models"
-version = "2.0.23"
+version = "2.0.24"
 description = "Open Data Discovery Models"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "odd_models-2.0.23-py3-none-any.whl", hash = "sha256:3ea7a24d45eac7ab5d6765db7c436fb42705d37f45fc2ab0f0a8e4683a2d69db"},
-    {file = "odd_models-2.0.23.tar.gz", hash = "sha256:675d918deb06931cfc46ce01cafbf7bbc801aac3069978040555085b0b90a374"},
+    {file = "odd_models-2.0.24-py3-none-any.whl", hash = "sha256:f593d7c5300b95389fa5e12d091ef79cbb88b1002825855788e882ea19e14608"},
+    {file = "odd_models-2.0.24.tar.gz", hash = "sha256:2235a9c53e3fa615ee7542619723eac2e0e5b255d8fe22d3bd4a6d993da439f8"},
 ]
 
 [package.dependencies]
@@ -1319,4 +1319,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "4fb4d236bc530631c60366b8c7e93d213ec3bc54d03200c445b4ac9657d37cf3"
+content-hash = "70b2863a4a8d99000ba8b9bfd8435b616eac68c8ddaa531a59fb494d6115185c"
