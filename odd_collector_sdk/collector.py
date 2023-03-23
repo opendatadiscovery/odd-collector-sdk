@@ -110,6 +110,16 @@ class Collector:
 
         await self._api.register_datasource(request)
 
+    async def one_time_run(self):
+        tasks = [
+            asyncio.create_task(
+                create_job(self._api, adapter, self.config.chunk_size).start()
+            )
+            for adapter in self._adapters
+        ]
+
+        await asyncio.gather(*tasks)
+
     def run(self, loop: Optional[AbstractEventLoop] = None):
         if not loop:
             loop = asyncio.get_event_loop()
@@ -122,8 +132,14 @@ class Collector:
 
             loop.run_until_complete(self.register_data_sources())
 
-            self.start_polling()
-            loop.run_forever()
+            interval = self.config.default_pulling_interval
+            logger.info(f"Config interval {interval=}")
+            if not interval:
+                logger.info(f"Collector will be run once.")
+                loop.run_until_complete(self.one_time_run())
+            else:
+                self.start_polling()
+                loop.run_forever()
         except PlatformApiError as e:
             logger.error(e)
             if e.request:
@@ -131,5 +147,5 @@ class Collector:
             loop.run_until_complete(shutdown(loop))
         except Exception as e:
             logger.debug(traceback.format_exc())
-            logger.error(e)
+            logger.exception(e)
             loop.run_until_complete(shutdown(loop))

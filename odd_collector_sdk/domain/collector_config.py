@@ -6,7 +6,7 @@ from .plugin import Plugin
 
 
 class CollectorConfig(pydantic.BaseSettings):
-    default_pulling_interval: int
+    default_pulling_interval: Optional[int] = None  # minutes
     connection_timeout_seconds: int = 300
     token: str
     plugins: List[Plugin]
