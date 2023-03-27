@@ -1,9 +1,9 @@
 from enum import Enum
-from typing import Any
+from typing import Any, Optional
 
 from funcy import select
 
-prefix = "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions/postgresql.json#/definitions"
+prefix = "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions"
 
 
 class DefinitionType(Enum):
@@ -15,9 +15,12 @@ from odd_models.models import MetadataExtension
 
 
 def extract_metadata(
-    entity: Any, definition: DefinitionType, skip_keys: set = None
+    datasource: str,
+    entity: Any,
+    definition: DefinitionType,
+    skip_keys: Optional[set] = None,
 ) -> MetadataExtension:
-    schema_url = f"{prefix}/{definition.value}"
+    schema_url = f"{prefix}/{datasource}.json#/definitions/{definition.value}"
 
     if hasattr(entity, "odd_metadata"):
         data = entity.odd_metadata
