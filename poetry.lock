@@ -733,6 +733,21 @@ sql-metadata = ">=2.6.0,<3.0.0"
 sqlparse = "0.4.2"
 
 [[package]]
+name = "oddrn-generator"
+version = "0.1.73"
+description = "Open Data Discovery Resource Name Generator"
+category = "main"
+optional = false
+python-versions = ">=3.9,<4.0"
+files = [
+    {file = "oddrn_generator-0.1.73-py3-none-any.whl", hash = "sha256:bc9dec65f7b11f8d0bb4a7072cc988183f0ac9128c0306783708f9eb66cec510"},
+    {file = "oddrn_generator-0.1.73.tar.gz", hash = "sha256:a78455e795faf69a7974d13587c086011f8bbbb409fe566a6c0e3b0a6a5dec49"},
+]
+
+[package.dependencies]
+pydantic = ">=1.9.1,<2.0.0"
+
+[[package]]
 name = "packaging"
 version = "23.0"
 description = "Core utilities for Python packages"
@@ -1319,4 +1334,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "70b2863a4a8d99000ba8b9bfd8435b616eac68c8ddaa531a59fb494d6115185c"
+content-hash = "b1754d588c786608724f89bb6f33b1a74402f44b8f16d6afde613aca05ee16a1"
