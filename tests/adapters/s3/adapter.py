@@ -1,14 +1,16 @@
 from odd_models.models import DataEntityList
+from oddrn_generator import Generator
 
-from odd_collector_sdk.domain.adapter import AbstractAdapter
+from odd_collector_sdk.domain.adapter import BaseAdapter
+from tests.generator import TestGenerator
 
 
-class Adapter(AbstractAdapter):
-    def __init__(self, config: any) -> None:
-        super().__init__()
+class Adapter(BaseAdapter):
+    def __init__(self, config) -> None:
+        super().__init__(config)
 
     def get_data_entity_list(self) -> DataEntityList:
         return DataEntityList(data_source_oddrn="test")
 
-    def get_data_source_oddrn(self) -> str:
-        return "oddrn"
+    def create_generator(self) -> Generator:
+        return TestGenerator(host_settings="test")

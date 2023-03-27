@@ -14,7 +14,6 @@ def test_importing_modules():
     config = loader.load()
 
     initializer = AdaptersInitializer("tests.adapters", config.plugins)
-
     package_name = "tests.adapters.glue"
 
     assert package_name not in sys.modules
