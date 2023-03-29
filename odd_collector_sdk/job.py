@@ -10,7 +10,7 @@ from funcy import chunks
 from odd_models.models import DataEntityList
 
 from odd_collector_sdk.api.datasource_api import PlatformApi
-from odd_collector_sdk.domain.adapter import AbstractAdapter, Adapter, AdapterConfig
+from odd_collector_sdk.domain.adapter import Adapter
 
 from .logger import logger
 
@@ -34,8 +34,7 @@ def log_execution(name):
 class AbstractJob:
     def __init__(self, api: PlatformApi, adapter: Adapter, chunk_size: int = 250):
         self._api = api
-        self._adapter: AbstractAdapter = adapter.adapter
-        self._config: AdapterConfig = adapter.config
+        self._adapter: Adapter = adapter
         self._chunk_size = chunk_size
 
     async def start() -> None:
@@ -55,7 +54,7 @@ class AbstractJob:
                 chunks(self._chunk_size, data_entity_list.items), start=1
             ):
                 logger.debug(
-                    f"[{self._config.name}] Yield batch #{index} with {len(items)} items"
+                    f"[{self._adapter.config.name}] Yield batch #{index} with {len(items)} items"
                 )
                 yield DataEntityList(
                     data_source_oddrn=self._adapter.get_data_source_oddrn(), items=items
@@ -64,7 +63,7 @@ class AbstractJob:
 
 class AsyncJob(AbstractJob):
     async def start(self):
-        with log_execution(self._config.name):
+        with log_execution(self._adapter.config.name):
             tasks = []
             async for del_ in self._get_data_entity_list():
                 task = asyncio.create_task(self.send_metadata(metadata=del_))
@@ -79,7 +78,7 @@ class AsyncJob(AbstractJob):
 
 class SyncJob(AbstractJob):
     async def start(self):
-        with log_execution(self._config.name):
+        with log_execution(self._adapter.config.name):
             for del_ in self._get_data_entity_list():
                 await self.send_metadata(metadata=del_)
 
@@ -89,9 +88,9 @@ class SyncJob(AbstractJob):
 
 
 def create_job(api: PlatformApi, adapter: Adapter, chunk_size: int) -> AbstractJob:
-    if isasyncgenfunction(adapter.adapter.get_data_entity_list):
+    if isasyncgenfunction(adapter.get_data_entity_list):
         raise ValueError("Async generator is not supported.")
-    if iscoroutinefunction(adapter.adapter.get_data_entity_list):
+    if iscoroutinefunction(adapter.get_data_entity_list):
         logger.debug(f"Is async {adapter.config.name=}")
         return AsyncJob(api, adapter, chunk_size)
     else:

@@ -19,10 +19,9 @@ from odd_collector_sdk.types import PluginFactory
 
 from .api.datasource_api import PlatformApi
 from .api.http_client import HttpClient
-from .domain.adapters_initializer import AdaptersInitializer
-from .domain.collector_config import CollectorConfig
-from .domain.collector_config_loader import CollectorConfigLoader
+from .domain.collector_config import load_config
 from .errors import PlatformApiError
+from .load_adapter import load_adapters
 from .utils.print_version import print_collector_packages_info
 
 logging.getLogger("apscheduler.scheduler").setLevel(logging.ERROR)
@@ -61,14 +60,11 @@ class Collector:
         plugins_package: str = "adapters",
     ) -> None:
         print_collector_packages_info(root_package)
+        self.config = load_config(config_path, plugin_factory)
 
-        loader = CollectorConfigLoader(config_path, plugin_factory)
-        self.config: CollectorConfig = loader.load()
-
-        adapters_package = f"{root_package}.{plugins_package}"
-        adapter_initializer = AdaptersInitializer(adapters_package, self.config.plugins)
-
-        self._adapters = adapter_initializer.init_adapters()
+        self._adapters = load_adapters(
+            f"{root_package}.{plugins_package}", self.config.plugins
+        )
         self._api = PlatformApi(
             http_client=HttpClient(
                 token=self.config.token,
@@ -100,15 +96,13 @@ class Collector:
         data_sources: List[DataSource] = [
             DataSource(
                 oddrn=adapter.get_data_source_oddrn(),
-                name=config.name,
-                description=config.description,
+                name=adapter.config.name,
+                description=adapter.config.description,
             )
-            for adapter, config in self._adapters
+            for adapter in self._adapters
         ]
 
-        request = DataSourceList(items=data_sources)
-
-        await self._api.register_datasource(request)
+        await self._api.register_datasource(DataSourceList(items=data_sources))
 
     async def one_time_run(self):
         tasks = [
@@ -119,7 +113,6 @@ class Collector:
         ]
 
         await asyncio.gather(*tasks)
-
 
     def run(self, loop: Optional[AbstractEventLoop] = None):
         if not loop:

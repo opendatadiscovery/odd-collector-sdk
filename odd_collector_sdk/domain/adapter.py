@@ -1,13 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import NamedTuple, TypeVar, Union
+from typing import Union
 
 from odd_models.models import DataEntityList
 from oddrn_generator import Generator
 
-from odd_collector_sdk.domain.plugin import Plugin
+from odd_collector_sdk.domain.plugin import Config
 
 
 class AbstractAdapter(ABC):
+    config: Config
+
     @abstractmethod
     def get_data_source_oddrn(self) -> str:
         pass
@@ -15,9 +17,6 @@ class AbstractAdapter(ABC):
     @abstractmethod
     def get_data_entity_list(self) -> DataEntityList:
         pass
-
-
-Config = TypeVar("Config", bound=Plugin)
 
 
 class BaseAdapter(AbstractAdapter, ABC):
@@ -35,8 +34,10 @@ class BaseAdapter(AbstractAdapter, ABC):
 
 
 class AsyncAbstractAdapter(ABC):
+    config: Config
+
     @abstractmethod
-    async def get_data_source_oddrn(self) -> str:
+    def get_data_source_oddrn(self) -> str:
         pass
 
     @abstractmethod
@@ -44,9 +45,4 @@ class AsyncAbstractAdapter(ABC):
         pass
 
 
-AdapterConfig = Plugin
-
-
-class Adapter(NamedTuple):
-    adapter: Union[AbstractAdapter, AsyncAbstractAdapter]
-    config: AdapterConfig
+Adapter = Union[BaseAdapter, AsyncAbstractAdapter, AbstractAdapter]
