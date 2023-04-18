@@ -1,4 +1,4 @@
-FROM python:3.9.12-slim-buster as base
+FROM python:3.9.16-slim-buster as base
 
 ARG PYPI_USERNAME
 ENV PYPI_USERNAME=$PYPI_USERNAME
@@ -7,8 +7,6 @@ ARG PYPI_PASSWORD
 ENV PYPI_PASSWORD=$PYPI_PASSWORD
 
 # installing poetry
-
-
 
 RUN apt-get update && \
     apt-get install -y -q build-essential curl
