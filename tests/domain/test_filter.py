@@ -2,10 +2,16 @@ from odd_collector_sdk.domain.filter import Filter
 
 
 def test_default_filter():
-    filter = Filter.allow_all()
+    filter = Filter()
     assert filter.validate("test_table")
     assert filter.validate("test_column")
     assert filter.validate("test_schema")
+
+
+def test_default_filter_with_excluded():
+    filter = Filter(exclude=[".*_pii"])
+    assert filter.validate("table_one")
+    assert not filter.validate("table_one_pii")
 
 
 def test_case_sensitive_include_filter():
