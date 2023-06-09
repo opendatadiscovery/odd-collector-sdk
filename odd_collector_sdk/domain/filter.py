@@ -18,3 +18,7 @@ class Filter(BaseModel):
             return False
 
         return any(match(pattern) for pattern in self.include)
+
+    @classmethod
+    def allow_all(cls):
+        return cls(include=[".*"])

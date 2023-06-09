@@ -1,6 +1,13 @@
 from odd_collector_sdk.domain.filter import Filter
 
 
+def test_default_filter():
+    filter = Filter.allow_all()
+    assert filter.validate("test_table")
+    assert filter.validate("test_column")
+    assert filter.validate("test_schema")
+
+
 def test_case_sensitive_include_filter():
     filter = Filter(include=["dev_table"])
     assert filter.validate("dev_table")
