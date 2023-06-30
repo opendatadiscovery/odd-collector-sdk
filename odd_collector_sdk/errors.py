@@ -43,6 +43,10 @@ class PlatformApiError(Exception):
 class IngestionDataError(PlatformApiError):
     data_entity_list: DataEntityList
 
+    @property
+    def message(self):
+        return f"Could not ingest data. Reason: {self.response}"
+
     def __init__(self, response, data_entity_list: DataEntityList) -> None:
         super().__init__(response)
         self.data_entity_list = data_entity_list
@@ -57,7 +61,7 @@ class RegisterDataSourceError(PlatformApiError):
 
     @property
     def message(self):
-        return f"Could not create data sources.\n Reason: {self.response}"
+        return f"Could not create data sources. Reason: {self.response}"
 
     @property
     def request(self) -> Optional[str]:
