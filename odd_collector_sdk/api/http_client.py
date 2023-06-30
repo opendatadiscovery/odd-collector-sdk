@@ -15,11 +15,12 @@ class HttpClient:
 
     async def post(self, url: str, data: Any, **kwargs):
         async with ClientSession() as session:
-            response = await session.post(
-                url=url, data=data, headers=self.headers, **kwargs
-            )
-            if response.status >= 400:
-                body = await response.json()
+            try:
+                response = await session.post(
+                    url=url, data=data, headers=self.headers, **kwargs
+                )
 
-                raise PlatformApiError(body)
-            return response
+                response.raise_for_status()
+                return response
+            except Exception as e:
+                raise PlatformApiError(e) from e

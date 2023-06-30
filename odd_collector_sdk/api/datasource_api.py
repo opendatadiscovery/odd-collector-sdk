@@ -20,7 +20,9 @@ class PlatformApi:
                 f"{self.__platform_url}/ingestion/datasources", requests.json()
             )
         except PlatformApiError as e:
-            raise RegisterDataSourceError(e.response, requests)
+            raise RegisterDataSourceError(e.response, requests) from e
+        except Exception:
+            raise
 
     async def ingest_data(self, data_entity_list: DataEntityList):
         try:
@@ -35,10 +37,13 @@ class PlatformApi:
                 f"{self.__platform_url}/ingestion/entities",
                 data,
             )
+            response.raise_for_status()
             ingest_end = timer()
             logger.debug(
-                f"Ingestion to platform took {timedelta(seconds=ingest_end  - ingest_start )} "
+                f"Ingestion to platform took {timedelta(seconds=ingest_end  - ingest_start )}"
             )
             return response
         except PlatformApiError as e:
-            raise IngestionDataError(e.response, data_entity_list)
+            raise IngestionDataError(e.response, data_entity_list) from e
+        except Exception:
+            raise
