@@ -23,6 +23,7 @@ class CollectorConfig(pydantic.BaseSettings):
     max_instances: Optional[
         int
     ] = 1  # maximum number of concurrently running instances allowed
+    verify_ssl: bool = True
 
 
 def load_config(

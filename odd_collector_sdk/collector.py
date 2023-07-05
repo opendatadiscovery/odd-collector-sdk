@@ -69,6 +69,7 @@ class Collector:
             http_client=HttpClient(
                 token=self.config.token,
                 connection_timeout_seconds=self.config.connection_timeout_seconds,
+                verify_ssl=self.config.verify_ssl,
             ),
             platform_url=self.config.platform_host_url,
         )
