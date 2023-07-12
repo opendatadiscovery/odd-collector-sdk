@@ -572,6 +572,23 @@ plugins = ["setuptools"]
 requirements-deprecated-finder = ["pip-api", "pipreqs"]
 
 [[package]]
+name = "lark-parser"
+version = "0.12.0"
+description = "a modern parsing library"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "lark-parser-0.12.0.tar.gz", hash = "sha256:15967db1f1214013dca65b1180745047b9be457d73da224fcda3d9dd4e96a138"},
+    {file = "lark_parser-0.12.0-py2.py3-none-any.whl", hash = "sha256:0eaf30cb5ba787fe404d73a7d6e61df97b21d5a63ac26c5008c78a494373c675"},
+]
+
+[package.extras]
+atomic-cache = ["atomicwrites"]
+nearley = ["js2py"]
+regex = ["regex"]
+
+[[package]]
 name = "loguru"
 version = "0.6.0"
 description = "Python logging made (stupidly) simple"
@@ -1336,4 +1353,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "5e4fe4c49d74c5dcb2bc37092b18ea878aba59a1a8472ba5272296b5b03f0fa5"
+content-hash = "42300c8f0984a8f6125d6832a30e0ca865d4840a05a8e0119409ff26745ce2c7"
