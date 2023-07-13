@@ -37,3 +37,8 @@ def test_case_insensitive_exclude_filter():
     filter = Filter(include=["table_"], exclude=[".*_pii"], ignore_case=True)
     assert filter.is_allowed("table_one")
     assert not filter.is_allowed("table_one_PII")
+
+def test_case_if_not_include():
+    default_include_value = [".*"]
+    filter = Filter(include=[], exclude=[])
+    assert filter.include == default_include_value
