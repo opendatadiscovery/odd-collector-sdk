@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odd-collector-sdk"
-version = "0.3.34"
+version = "0.3.35"
 description = "ODD Collector"
 license = "Apache-2.0"
 readme = "README.md"
@@ -23,6 +23,7 @@ funcy = "^2.0"
 loguru = "^0.6.0"
 oddrn-generator = "^0.1.73"
 flatdict = "^4.0.1"
+prettytable = "^3.8.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
