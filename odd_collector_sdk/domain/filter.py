@@ -18,3 +18,10 @@ class Filter(BaseModel):
             return False
 
         return any(match(pattern) for pattern in self.include)
+
+    def is_prefix_allowed(self, value: str) -> bool:
+        search = partial(re.search, string=value, flags=self.case_sensitive_flag())
+        if any(search(pattern) for pattern in self.exclude):
+            return False
+
+        return any(search(pattern) for pattern in self.include)
