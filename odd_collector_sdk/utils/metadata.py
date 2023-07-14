@@ -5,6 +5,7 @@ from typing import Any, Optional
 from flatdict import FlatDict
 from odd_models.models import MetadataExtension
 
+from odd_collector_sdk.logger import logger
 from odd_collector_sdk.utils.json_encoder import CustomJSONEncoder
 
 prefix = "https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions"
@@ -34,12 +35,13 @@ def extract_metadata(
         data = entity.__dict__
 
     not_none = {}
-    for key, value in data.items():
-        if value:
-            if isinstance(value, dict):
-                value = str(FlatDict(value, delimiter="."))
+    for key, value in FlatDict(data, delimiter='.').items():
+        if value is not None:
             if jsonify and not isinstance(value, (str, int)):
-                not_none[key] = json.dumps(value, cls=CustomJSONEncoder)
+                try:
+                    not_none[key] = json.dumps(value, cls=CustomJSONEncoder)
+                except TypeError as error:
+                    logger.error(error)
             else:
                 not_none[key] = value
     return MetadataExtension(schema_url=schema_url, metadata=not_none)
