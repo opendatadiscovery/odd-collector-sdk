@@ -252,7 +252,7 @@ class DatasetFieldBuilder:
                 )
         else:
             raise UnexpectedTypeError(
-                    object_name="node",
-                    received_type=type(node),
-                    expected_type="Tree, Token"
-                )
+                object_name="node",
+                received_type=type(node),
+                expected_type="Tree, Token"
+            )
