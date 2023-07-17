@@ -9,7 +9,7 @@ class Filter(BaseModel):
     exclude: list[str] = []
     ignore_case: bool = False
 
-    @validator('include')
+    @validator("include", always=True)
     def check_include(cls, include):
         if not include:
             return [".*"]
