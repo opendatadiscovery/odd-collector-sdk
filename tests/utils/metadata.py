@@ -55,17 +55,9 @@ def test_extract_metadata_nested_dict():
 
     assert isinstance(result, MetadataExtension)
     assert result.schema_url == f"https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions/{datasource}.json#/definitions/{definition.value}"
-    result = {
-        'test_float': '0.01',
-        'test_uuid': json.dumps(str(entity.test_uuid)),
-        'test_str': 'test',
-        'test_nested.name': 'nested dict',
-        'test_nested.nested.key1': 'value1',
-        'test_nested.nested.key2': 'value2'
-    }
-    assert result == {'test_float': '0.01', "test_uuid": json.dumps(str(entity.test_uuid)), 'test_str': 'test',
-                      'test_nested.name': 'nested dict', 'test_nested.nested.key1': 'value1',
-                      'test_nested.nested.key2': 'value2'}
+    assert result.metadata == {'test_float': '0.01', "test_uuid": json.dumps(str(entity.test_uuid)), 'test_str': 'test',
+                               'test_nested.name': 'nested dict', 'test_nested.nested.key1': 'value1',
+                               'test_nested.nested.key2': 'value2'}
 
 
 def test_extract_metadata_empty():
