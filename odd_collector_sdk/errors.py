@@ -66,3 +66,7 @@ class RegisterDataSourceError(PlatformApiError):
     @property
     def request(self) -> Optional[str]:
         return self.data_source_list.json()
+
+
+class ExtractMetadataError(Exception):
+    pass
