@@ -21,7 +21,9 @@ jobs:
           virtualenvs-in-project: true
 
       - name: Run the automated
-        run: poetry run pytest -v
+        run: |
+          poetry install
+          poetry run pytest -v
 
       - name: Patch package version
         run: |
