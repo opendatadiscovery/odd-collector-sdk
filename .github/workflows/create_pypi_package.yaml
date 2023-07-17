@@ -13,14 +13,20 @@ jobs:
     steps:
       - name: Checkout main
         uses: actions/checkout@v3
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9.16'
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
+          poetry-version: 1.3.2
           virtualenvs-create: true
           virtualenvs-in-project: true
 
-      - name: Run the automated
+      - name: Run the automated tests
         run: |
           poetry install
           poetry run pytest -v
