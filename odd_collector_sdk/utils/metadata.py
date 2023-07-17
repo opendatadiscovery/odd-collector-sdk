@@ -32,6 +32,8 @@ def extract_metadata(
     try:
         if hasattr(entity, "odd_metadata"):
             data = entity.odd_metadata
+        elif isinstance(entity, dict):
+            data = entity
         else:
             data = entity.__dict__
 
