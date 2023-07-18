@@ -13,6 +13,7 @@ jobs:
     steps:
       - name: Checkout main
         uses: actions/checkout@v3
+
       - name: Set up python
         id: setup-python
         uses: actions/setup-python@v4
@@ -31,10 +32,13 @@ jobs:
           poetry install
           poetry run pytest -v
 
+      - name: Linting
+        uses: chartboost/ruff-action@v1
+
       - name: Patch package version
         run: |
           poetry version patch
-          echo "VERSION = '$(poetry version -s)'" > odd_collector_sdk/__version__.py
+          echo "VERSION = \"$(poetry version -s)\"" > odd_collector_sdk/__version__.py
 
 
       - name: Run Dockerfile to build and publish package into PyPI
