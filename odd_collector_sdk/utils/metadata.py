@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Optional, Type
 
 from flatdict import FlatDict
-from funcy import partial, select_values, walk_values
+from funcy import complement, partial, select_values, walk_values
 from odd_models.models import MetadataExtension
 
 from odd_collector_sdk.logger import logger
@@ -55,15 +55,17 @@ def extract_metadata(
             encode = partial(to_json, encoder=json_encoder)
             data = walk_values(encode, data)
 
-        not_none = select_values(lambda x: x is not None, data)
+        not_none = select_values(complement(is_none), data)
 
         return MetadataExtension(schema_url=schema_url, metadata=not_none)
     except Exception as error:
         logger.error(f"Couldn't extract metadata, {error}")
         return MetadataExtension(schema_url=schema_url, metadata={})
 
+def is_none(value) -> bool:
+    return value is None
 
-def to_json(value, encoder: Optional[json.JSONEncoder]) -> Optional[str]:
+def to_json(value, encoder: Optional[Type[json.JSONEncoder]]) -> Optional[str]:
     try:
         return json.dumps(value, cls=encoder or CustomJSONEncoder)
     except Exception as error:

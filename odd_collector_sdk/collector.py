@@ -130,7 +130,7 @@ class Collector:
             interval = self.config.default_pulling_interval
             logger.info(f"Config interval {interval=}")
             if not interval:
-                logger.info(f"Collector will be run once.")
+                logger.info("Collector will be run once.")
                 loop.run_until_complete(self.one_time_run())
             else:
                 self.start_polling()

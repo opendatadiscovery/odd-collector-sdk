@@ -25,18 +25,18 @@ oddrn-generator = "^0.1.73"
 flatdict = "^4.0.1"
 prettytable = "^3.8.0"
 
-[tool.poetry.dev-dependencies]
-pytest = "^5.2"
-
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
-isort = "^5.12.0"
 pre-commit = "^3.0.4"
+ruff = "^0.0.278"
+pytest = "^7.4.0"
 
-
-[tool.isort]
-profile="black"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+ignore =["E501"]
+
+

@@ -216,6 +216,13 @@ def test_extract_flatten_jsonfy_metadata_from_class_with_an_empty_with_complex(
     assert metadata.metadata == FLATTEN_ENCODED_METADATA
     assert metadata.json()
 
+def test_filter_none_values(partial_extract_metadata):
+    metadata = COMPLEX_METADATA.copy()
+    metadata['none_value'] = None
+    entity = EntityWithMetadata(foo="foo", bar="bar", odd_metadata=COMPLEX_METADATA)
+    metadata = partial_extract_metadata(entity=entity)
+    assert 'none_value' not in metadata.metadata
+
 
 def test_flat_dict():
     from odd_collector_sdk.utils.metadata import flat_dict
