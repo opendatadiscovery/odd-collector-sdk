@@ -1,126 +1,224 @@
 import json
-from dataclasses import dataclass
-from uuid import UUID, uuid4
 
-from odd_models.models import MetadataExtension
+import pytest
+from attr import dataclass
+from funcy import partial, walk_values
+from odd_models import MetadataExtension
+from pydantic import BaseModel
 
 from odd_collector_sdk.utils.metadata import DefinitionType, extract_metadata
 
 
+@pytest.fixture
+def partial_extract_metadata():
+    return partial(
+        extract_metadata,
+        datasource="test_datasource",
+        definition=DefinitionType.DATASET,
+    )
+
+
+COMPLEX_METADATA = {
+    "meta": "meta",
+    "nested_meta": {
+        "nested_field_one": 1,
+        "nested_field_two": "string",
+        "nested_field_three": [{"foo": "bat"}, {"foo": {}}],
+        "nested_field_four": {"more_nested_field": 1, "more_nested_field_two": {}},
+        "nested_field_five": {},
+    },
+}
+
+FLATTEN = {
+    "meta": "meta",
+    "nested_meta.nested_field_one": 1,
+    "nested_meta.nested_field_two": "string",
+    "nested_meta.nested_field_three": [{"foo": "bat"}, {"foo": {}}],
+    "nested_meta.nested_field_four.more_nested_field": 1,
+    "nested_meta.nested_field_four.more_nested_field_two": {},
+    "nested_meta.nested_field_five": {},
+}
+
+ENCODED_METADATA = walk_values(json.dumps, COMPLEX_METADATA)
+FLATTEN_ENCODED_METADATA = walk_values(json.dumps, FLATTEN)
+
+
+class Entity:
+    def __init__(self, foo, bar):
+        self.foo = foo
+        self.bar = bar
+
+
+class EntityWithMetadata:
+    def __init__(self, foo, bar, odd_metadata):
+        self.foo = foo
+        self.bar = bar
+        self.odd_metadata = odd_metadata
+
+
 @dataclass
-class TestEntity:
-    test_float: float = 0.01
-    test_uuid: UUID = uuid4()
-    test_str: str = "test"
+class DataclassEntity:
+    foo: str
+    bar: str
 
 
-def test_extract_metadata():
-    datasource = "example_datasource"
-    entity = TestEntity()
-    definition = DefinitionType.DATASET
+@dataclass
+class DataclassEntityWithMetadata:
+    foo: str
+    bar: str
+    odd_metadata: dict
 
-    result = extract_metadata(datasource, entity, definition, jsonify=False)
 
-    assert isinstance(result, MetadataExtension)
-    assert (
-        result.schema_url
-        == f"https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions/{datasource}.json#/definitions/{definition.value}"
+class PydanticEntity(BaseModel):
+    foo: str
+    bar: str
+
+
+class PydanticEntityWithMetadata(BaseModel):
+    foo: str
+    bar: str
+    odd_metadata: dict
+
+
+def test_extract_metadata_from_class_without_metadata_field(partial_extract_metadata):
+    entity = Entity(foo="foo", bar="bar")
+
+    metadata = partial_extract_metadata(entity=entity)
+
+    assert isinstance(metadata, MetadataExtension)
+    assert metadata.metadata == {}
+
+    assert metadata.json()
+
+
+def test_extract_metadata_from_dataclass_without_metadata_field(
+    partial_extract_metadata,
+):
+    entity = DataclassEntity("foo", "bar")
+    metadata = partial_extract_metadata(entity=entity)
+
+    assert isinstance(metadata, MetadataExtension)
+    assert metadata.metadata == {}
+
+    assert metadata.json()
+
+
+def test_extract_metadata_from_pydantic_without_metadata_field(
+    partial_extract_metadata,
+):
+    entity = PydanticEntity(foo="foo", bar="bar")
+    metadata = partial_extract_metadata(entity=entity)
+
+    assert isinstance(metadata, MetadataExtension)
+    assert metadata.metadata == {}
+
+    assert metadata.json()
+
+
+def test_extract_metadata_from_class_with_metadata_field(partial_extract_metadata):
+    entity = EntityWithMetadata(foo="foo", bar="bar", odd_metadata={"meta": "meta"})
+    metadata = partial_extract_metadata(entity=entity)
+
+    assert isinstance(metadata, MetadataExtension)
+    assert metadata.metadata == entity.odd_metadata
+
+    assert metadata.json()
+
+
+def test_extract_metadata_from_class_with_metadata_added_at_runtime(
+    partial_extract_metadata,
+):
+    entity = Entity(foo="foo", bar="bar")
+    entity.odd_metadata = {"meta": "meta"}
+    metadata = partial_extract_metadata(entity=entity)
+
+    assert isinstance(metadata, MetadataExtension)
+    assert metadata.metadata == entity.odd_metadata
+
+    assert metadata.json()
+
+
+def test_extract_metadata_from_dataclass_with_metadata_field(partial_extract_metadata):
+    entity = DataclassEntityWithMetadata(
+        foo="foo", bar="bar", odd_metadata={"meta": "meta"}
     )
-    assert result.metadata == {
-        "test_float": 0.01,
-        "test_uuid": entity.test_uuid,
-        "test_str": "test",
-    }
+    metadata = partial_extract_metadata(entity=entity)
+
+    assert isinstance(metadata, MetadataExtension)
+    assert metadata.metadata == entity.odd_metadata
+
+    assert metadata.json()
 
 
-def test_extract_metadata_serialized():
-    datasource = "example_datasource"
-    entity = TestEntity()
-    definition = DefinitionType.DATASET
+def test_extract_metadata_from_dataclass_with_metadata_field_added_at_runtime(
+    partial_extract_metadata,
+):
+    entity = DataclassEntity(foo="foo", bar="bar")
+    entity.odd_metadata = {"meta": "meta"}
+    metadata = partial_extract_metadata(entity=entity)
 
-    result = extract_metadata(datasource, entity, definition, jsonify=True)
+    assert isinstance(metadata, MetadataExtension)
+    assert metadata.metadata == entity.odd_metadata
 
-    assert isinstance(result, MetadataExtension)
-    assert (
-        result.schema_url
-        == f"https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions/{datasource}.json#/definitions/{definition.value}"
+    assert metadata.json()
+
+
+def test_extract_metadata_from_pydantic_class_with_metadata_field(
+    partial_extract_metadata,
+):
+    entity = PydanticEntityWithMetadata(
+        foo="foo", bar="bar", odd_metadata={"meta": "meta"}
     )
-    assert result.metadata == {
-        "test_float": "0.01",
-        "test_uuid": json.dumps(str(entity.test_uuid)),
-        "test_str": "test",
-    }
+    metadata = partial_extract_metadata(entity=entity)
+
+    assert isinstance(metadata, MetadataExtension)
+    assert metadata.metadata == entity.odd_metadata
+
+    assert metadata.json()
 
 
-def test_extract_metadata_nested_dict():
-    datasource = "example_datasource"
-    entity = TestEntity()
-    entity.test_nested = {
-        "name": "nested dict",
-        "nested": {"key1": "value1", "key2": "value2"},
-    }
-    definition = DefinitionType.DATASET
+def test_extract_metadata_from_class_with_an_empty_with_complex(
+    partial_extract_metadata,
+):
+    entity = EntityWithMetadata(foo="foo", bar="bar", odd_metadata=COMPLEX_METADATA)
+    metadata = partial_extract_metadata(entity=entity)
 
-    result = extract_metadata(datasource, entity, definition, jsonify=True)
-
-    assert isinstance(result, MetadataExtension)
-    assert (
-        result.schema_url
-        == f"https://raw.githubusercontent.com/opendatadiscovery/opendatadiscovery-specification/main/specification/extensions/{datasource}.json#/definitions/{definition.value}"
-    )
-    assert result.metadata == {
-        "test_float": "0.01",
-        "test_uuid": json.dumps(str(entity.test_uuid)),
-        "test_str": "test",
-        "test_nested.name": "nested dict",
-        "test_nested.nested.key1": "value1",
-        "test_nested.nested.key2": "value2",
-    }
+    assert metadata.metadata == COMPLEX_METADATA
+    assert metadata.json()
 
 
-def test_extract_metadata_empty():
-    datasource = "example_datasource"
-    entity = TestEntity()
-    entity.odd_metadata = {}
-    definition = DefinitionType.DATASET
+def test_extract_flatten_metadata_from_class_with_an_empty_with_complex(
+    partial_extract_metadata,
+):
+    entity = EntityWithMetadata(foo="foo", bar="bar", odd_metadata=COMPLEX_METADATA)
+    metadata = partial_extract_metadata(entity=entity, flatten=True)
 
-    result = extract_metadata(datasource, entity, definition, jsonify=False)
-    assert result.metadata == {}
-
-
-def test_extract_metadata_with_none_values():
-    datasource = "example_datasource"
-    entity = TestEntity()
-    entity.test_float = None
-    entity.test_uuid = None
-    entity.test_str = None
-    definition = DefinitionType.DATASET
-
-    result = extract_metadata(datasource, entity, definition, jsonify=False)
-    assert result.metadata == {}
+    assert metadata.metadata == FLATTEN
+    assert metadata.json()
 
 
-def test_extract_metadata_with_none_entity():
-    datasource = "example_datasource"
-    definition = DefinitionType.DATASET
+def test_extract_jsonfy_metadata_from_class_with_an_empty_with_complex(
+    partial_extract_metadata,
+):
+    entity = EntityWithMetadata(foo="foo", bar="bar", odd_metadata=COMPLEX_METADATA)
+    metadata = partial_extract_metadata(entity=entity, jsonify=True)
 
-    result = extract_metadata(datasource, None, definition, jsonify=True)
-    assert result.metadata == {}
-
-
-def test_extract_metadata_with_none_metadata():
-    datasource = "example_datasource"
-    entity = TestEntity()
-    entity.odd_metadata = None
-
-    result = extract_metadata(datasource, entity, DefinitionType.DATASET, jsonify=False)
-    assert result.metadata == {}
+    assert metadata.metadata == ENCODED_METADATA
+    assert metadata.json()
 
 
-def test_extract_metadata_with_unpredicted_error():
-    datasource = "example_datasource"
-    entity = TestEntity()
-    entity.odd_metadata = []
+def test_extract_flatten_jsonfy_metadata_from_class_with_an_empty_with_complex(
+    partial_extract_metadata,
+):
+    entity = EntityWithMetadata(foo="foo", bar="bar", odd_metadata=COMPLEX_METADATA)
+    metadata = partial_extract_metadata(entity=entity, flatten=True, jsonify=True)
 
-    res = extract_metadata(datasource, entity, DefinitionType.DATASET, jsonify=False)
-    assert res.metadata == {}
+    assert metadata.metadata == FLATTEN_ENCODED_METADATA
+    assert metadata.json()
+
+
+def test_flat_dict():
+    from odd_collector_sdk.utils.metadata import flat_dict
+
+    data = flat_dict(COMPLEX_METADATA)
+    assert data == FLATTEN
