@@ -17,10 +17,10 @@ class DefinitionType(Enum):
 
 
 def extract_metadata(
-    datasource: str,
-    entity: Any,
-    definition: DefinitionType,
-    jsonify: Optional[bool] = False,
+        datasource: str,
+        entity: Any,
+        definition: DefinitionType,
+        jsonify: Optional[bool] = False,
 ) -> MetadataExtension:
     """
     :param datasource: name of datasource.
@@ -35,17 +35,28 @@ def extract_metadata(
         else:
             data = entity.__dict__
 
+        flat_data = FlatDict(data, delimiter=".")
         not_none = {}
-        for key, value in FlatDict(data, delimiter=".").items():
-            if value is not None:
-                if jsonify and not isinstance(value, (str, int)):
-                    try:
-                        not_none[key] = json.dumps(value, cls=CustomJSONEncoder)
-                    except Exception as error:
-                        logger.error(f"Could not jsonfy metadata {key=}. {error}")
-                        continue
-                else:
-                    not_none[key] = value
+
+        def _unpack_flatdict(data: FlatDict):
+            for key, value in FlatDict(data, delimiter=".").items():
+                if value is not None:
+                    if isinstance(value, FlatDict):
+                        if value:
+                            _unpack_flatdict(value)
+                        else:
+                            not_none[key] = "{}"
+                    elif jsonify and not isinstance(value, (str, int)):
+                        try:
+                            not_none[key] = json.dumps(value, cls=CustomJSONEncoder)
+                        except Exception as error:
+                            logger.error(f"Could not jsonfy metadata {key=}. {error}")
+                            continue
+                    else:
+                        not_none[key] = value
+            return not_none
+
+        _unpack_flatdict(flat_data)
         return MetadataExtension(schema_url=schema_url, metadata=not_none)
     except Exception as error:
         logger.error(f"Couldn't extract metadata, {error}")
