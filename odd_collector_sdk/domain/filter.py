@@ -20,8 +20,8 @@ class Filter(BaseModel):
         return re.IGNORECASE if self.ignore_case else 0
 
     def is_allowed(self, value: str) -> bool:
-        match = partial(re.match, string=value, flags=self.case_sensitive_flag())
-        if any(match(pattern) for pattern in self.exclude):
+        search = partial(re.search, string=value, flags=self.case_sensitive_flag())
+        if any(search(pattern) for pattern in self.exclude):
             return False
 
-        return any(match(pattern) for pattern in self.include)
+        return any(search(pattern) for pattern in self.include)

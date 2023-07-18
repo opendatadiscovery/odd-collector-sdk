@@ -14,6 +14,18 @@ def test_default_filter_with_excluded():
     assert not odd_filter.is_allowed("table_one_pii")
 
 
+def test_default_filter_with_excluded_2():
+    filter = Filter(exclude=["pii"])
+    assert filter.is_allowed("table_one")
+    assert not filter.is_allowed("table_one_pii")
+
+
+def test_default_filter_with_included():
+    filter = Filter(include=["dev"])
+    assert filter.is_allowed("dev_table")
+    assert not filter.is_allowed("prod_table")
+
+
 def test_case_sensitive_include_filter():
     odd_filter = Filter(include=["dev_table"])
     assert odd_filter.is_allowed("dev_table")
