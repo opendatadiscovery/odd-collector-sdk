@@ -12,4 +12,13 @@ class TestS3Plugin(Plugin):
     type: Literal["s3"]
 
 
-PLUGIN_FACTORY: PluginFactory = {"glue": TestGluePlugin, "s3": TestS3Plugin}
+class PostgresPlugin(Plugin):
+    type: Literal["postgres"]
+    db_user: str
+
+
+PLUGIN_FACTORY: PluginFactory = {
+    "glue": TestGluePlugin,
+    "s3": TestS3Plugin,
+    "postgres": PostgresPlugin,
+}

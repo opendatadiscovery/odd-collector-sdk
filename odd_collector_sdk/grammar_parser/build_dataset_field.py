@@ -1,21 +1,39 @@
 from pathlib import Path
 from typing import Any
-from lark import Lark, Tree, Token
+
+from lark import Lark, Token, Tree
 from odd_models import DataSetField, DataSetFieldType, Type
 from oddrn_generator import Generator
+
 from ..logger import logger
-from .field_types import StructType, ArrayType, MapType, BasicType, UnionType, Field, ParseType
 from ..utils.metadata import DefinitionType, extract_metadata
 from .exceptions import NonTypeObjectError, StructureError, UnexpectedTypeError
+from .field_types import (
+    ArrayType,
+    BasicType,
+    Field,
+    MapType,
+    ParseType,
+    StructType,
+    UnionType,
+)
 
 
 class DatasetFieldBuilder:
-    def __init__(self, data_source: str, oddrn_generator: Generator, parser_config_path: Path,
-                 odd_types_map: dict, parser_type: str = "lalr"):
+    def __init__(
+        self,
+        data_source: str,
+        oddrn_generator: Generator,
+        parser_config_path: Path,
+        odd_types_map: dict,
+        parser_type: str = "lalr",
+    ):
         self.data_source = data_source
         self.odd_types_map = odd_types_map
         self.oddrn_generator = oddrn_generator
-        self.parser = Lark.open(str(parser_config_path), rel_to=__file__, parser=parser_type, start="type")
+        self.parser = Lark.open(
+            str(parser_config_path), rel_to=__file__, parser=parser_type, start="type"
+        )
 
     def build_dataset_field(self, field: Any) -> list[DataSetField]:
         data_source = self.data_source
@@ -26,7 +44,9 @@ class DatasetFieldBuilder:
         field_type = self.traverse_tree(type_tree)
         generated_dataset_fields = []
 
-        def _build_ds_field_from_type(field_name: str, field_type: ParseType, parent_oddrn=None):
+        def _build_ds_field_from_type(
+            field_name: str, field_type: ParseType, parent_oddrn=None
+        ):
             if parent_oddrn is None:
                 oddrn = oddrn_generator.get_oddrn_by_path("columns", field_name)
             else:
@@ -152,7 +172,7 @@ class DatasetFieldBuilder:
                     raise StructureError(
                         object_type=node.data,
                         expected_size="<= 2",
-                        actual_size=len(node.children)
+                        actual_size=len(node.children),
                     )
 
                 child = node.children[0]
@@ -182,7 +202,7 @@ class DatasetFieldBuilder:
                         raise UnexpectedTypeError(
                             object_name="child",
                             received_type=type(value),
-                            expected_type=Field
+                            expected_type=Field,
                         )
                 return StructType(fields)
 
@@ -196,7 +216,7 @@ class DatasetFieldBuilder:
                         raise UnexpectedTypeError(
                             object_name="child",
                             received_type=type(value),
-                            expected_type=Field
+                            expected_type=Field,
                         )
                 return UnionType(fields)
 
@@ -205,7 +225,7 @@ class DatasetFieldBuilder:
                     raise StructureError(
                         object_type=node.data,
                         expected_size="<= 3",
-                        actual_size=len(node.children)
+                        actual_size=len(node.children),
                     )
                 field_name_node, field_type_node = node.children[0], node.children[1]
                 field_name = self.traverse_tree(field_name_node)
@@ -213,14 +233,14 @@ class DatasetFieldBuilder:
                     raise UnexpectedTypeError(
                         object_name="field name",
                         received_type=type(field_name),
-                        expected_type=str
+                        expected_type=str,
                     )
                 field_type = self.traverse_tree(field_type_node)
                 if not isinstance(field_type, ParseType):
                     raise UnexpectedTypeError(
                         object_name="field type",
                         received_type=type(field_type),
-                        expected_type=ParseType
+                        expected_type=ParseType,
                     )
                 return Field(field_name, field_type)
 
@@ -229,7 +249,7 @@ class DatasetFieldBuilder:
                     raise StructureError(
                         object_type=node.data,
                         expected_size="= 1",
-                        actual_size=len(node.children)
+                        actual_size=len(node.children),
                     )
                 return BasicType(node.children[0])
 
@@ -237,7 +257,7 @@ class DatasetFieldBuilder:
                 raise UnexpectedTypeError(
                     object_name="tree",
                     received_type=node.data,
-                    expected_type="array, list, map, struct, field, union, primitive_type"
+                    expected_type="array, list, map, struct, field, union, primitive_type",
                 )
 
         elif isinstance(node, Token):
@@ -249,11 +269,11 @@ class DatasetFieldBuilder:
                 raise UnexpectedTypeError(
                     object_name="token",
                     received_type=node.type,
-                    expected_type="BASIC_TYPE, FIELD_NAME"
+                    expected_type="BASIC_TYPE, FIELD_NAME",
                 )
         else:
             raise UnexpectedTypeError(
                 object_name="node",
                 received_type=type(node),
-                expected_type="Tree, Token"
+                expected_type="Tree, Token",
             )

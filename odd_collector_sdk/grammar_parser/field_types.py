@@ -35,9 +35,7 @@ class MapType(ParseType):
         self.value_type = value_type
 
     def to_logical_type(self) -> str:
-        return (
-            f"Map({self.key_type.to_logical_type()}, {self.value_type.to_logical_type()})"
-        )
+        return f"Map({self.key_type.to_logical_type()}, {self.value_type.to_logical_type()})"
 
     def __repr__(self) -> str:
         return f"Map<{self.key_type}, {self.value_type}>"
