@@ -62,8 +62,10 @@ def extract_metadata(
         logger.error(f"Couldn't extract metadata, {error}")
         return MetadataExtension(schema_url=schema_url, metadata={})
 
+
 def is_none(value) -> bool:
     return value is None
+
 
 def to_json(value, encoder: Optional[Type[json.JSONEncoder]]) -> Optional[str]:
     try:

@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from typing import Dict, Type, Union
 
-from pyaml_env import parse_config
+from odd_collector_sdk.utils.yaml_parser import parse_yaml
 
 from ..errors import LoadConfigError
 from ..logger import logger
@@ -24,12 +24,16 @@ class CollectorConfigLoader:
         logger.info("Start reading config")
 
         try:
-            parsed = parse_config(str(self.path))
-            parsed["plugins"] = [
-                self.plugin_factory[plugin["type"]].parse_obj(plugin)
-                for plugin in parsed["plugins"]
-            ]
+            with open(self.path) as stream:
+                logger.debug("Parsing config")
 
-            return CollectorConfig.parse_obj(parsed)
+                parsed = parse_yaml(stream)
+
+                parsed["plugins"] = [
+                    self.plugin_factory[plugin["type"]].parse_obj(plugin)
+                    for plugin in parsed["plugins"]
+                ]
+
+                return CollectorConfig.parse_obj(parsed)
         except Exception as e:
             raise LoadConfigError(e)
