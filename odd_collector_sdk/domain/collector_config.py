@@ -3,10 +3,10 @@ from pathlib import Path
 from typing import Dict, List, Optional, Type, Union
 
 import pydantic
-from pyaml_env import parse_config
 
 from ..errors import LoadConfigError
 from ..logger import logger
+from ..utils.yaml_parser import parse_yaml as parse_config
 from .plugin import Plugin
 
 
@@ -36,12 +36,13 @@ def load_config(
         logger.debug(f"{config_path=}")
         logger.info("Start reading config")
 
-        parsed = parse_config(str(config_path))
-        parsed["plugins"] = [
-            plugin_factory[plugin["type"]].parse_obj(plugin)
-            for plugin in parsed["plugins"]
-        ]
+        with open(config_path) as f:
+            parsed = parse_config(f)
+            parsed["plugins"] = [
+                plugin_factory[plugin["type"]].parse_obj(plugin)
+                for plugin in parsed["plugins"]
+            ]
 
-        return CollectorConfig.parse_obj(parsed)
+            return CollectorConfig.parse_obj(parsed)
     except Exception as e:
         raise LoadConfigError(e)
