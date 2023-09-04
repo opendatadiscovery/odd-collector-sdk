@@ -59,7 +59,7 @@ def extract_metadata(
 
         return MetadataExtension(schema_url=schema_url, metadata=not_none)
     except Exception as error:
-        logger.error(f"Couldn't extract metadata, {error}")
+        logger.warning(f"Couldn't extract metadata, {error}")
         return MetadataExtension(schema_url=schema_url, metadata={})
 
 
