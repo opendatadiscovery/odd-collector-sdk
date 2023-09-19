@@ -23,12 +23,12 @@ class DefinitionType(Enum):
 
 
 def extract_metadata(
-        datasource: str,
-        entity: HasMetadata,
-        definition: DefinitionType,
-        flatten: Optional[bool] = False,
-        jsonify: Optional[bool] = False,
-        json_encoder: Optional[Type[json.JSONEncoder]] = None,
+    datasource: str,
+    entity: HasMetadata,
+    definition: DefinitionType,
+    flatten: Optional[bool] = False,
+    jsonify: Optional[bool] = False,
+    json_encoder: Optional[Type[json.JSONEncoder]] = None,
 ) -> MetadataExtension:
     """
     :param datasource: name of datasource.
