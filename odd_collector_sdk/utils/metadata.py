@@ -23,12 +23,12 @@ class DefinitionType(Enum):
 
 
 def extract_metadata(
-    datasource: str,
-    entity: HasMetadata,
-    definition: DefinitionType,
-    flatten: Optional[bool] = False,
-    jsonify: Optional[bool] = False,
-    json_encoder: Optional[Type[json.JSONEncoder]] = None,
+        datasource: str,
+        entity: HasMetadata,
+        definition: DefinitionType,
+        flatten: Optional[bool] = False,
+        jsonify: Optional[bool] = False,
+        json_encoder: Optional[Type[json.JSONEncoder]] = None,
 ) -> MetadataExtension:
     """
     :param datasource: name of datasource.
@@ -48,12 +48,12 @@ def extract_metadata(
         if not isinstance(data, dict):
             raise TypeError(f"Metadata must be a dict, got {type(data)}")
 
-        if flatten:
-            data = flat_dict(data)
-
         if jsonify:
             encode = partial(to_json, encoder=json_encoder)
             data = walk_values(encode, data)
+
+        if flatten:
+            data = flat_dict(data)
 
         not_none = select_values(complement(is_none), data)
 
@@ -68,8 +68,10 @@ def is_none(value) -> bool:
 
 
 def to_json(value, encoder: Optional[Type[json.JSONEncoder]]) -> Optional[str]:
+    if isinstance(value, (str, int, float, bool, type(None))):
+        return value  # Return primitives as-is
     try:
-        return json.dumps(value, cls=encoder or CustomJSONEncoder)
+        return json.loads(json.dumps(value, cls=encoder or CustomJSONEncoder))  # Deserialize back to Python objects
     except Exception as error:
         logger.error(f"Could not jsonfy {value=}. {error}.\n SKIP.")
         return None
