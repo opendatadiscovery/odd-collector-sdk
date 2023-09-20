@@ -49,7 +49,7 @@ def extract_metadata(
             raise TypeError(f"Metadata must be a dict, got {type(data)}")
 
         if jsonify:
-            encode = partial(to_json, encoder=json_encoder)
+            encode = partial(parse_complex_types, encoder=json_encoder)
             data = walk_values(encode, data)
 
         if flatten:
@@ -67,7 +67,7 @@ def is_none(value) -> bool:
     return value is None
 
 
-def to_json(value, encoder: Optional[Type[json.JSONEncoder]]) -> Optional[str]:
+def parse_complex_types(value, encoder: Optional[Type[json.JSONEncoder]]) -> Optional[str]:
     if isinstance(value, (str, int, float, bool, type(None))):
         return value  # Return primitives as-is
     try:
